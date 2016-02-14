@@ -84,9 +84,6 @@ function checkSubGroups(grpId){
             checkSubGroups(groups[v].id);
         }
     }
-    if (table2.length>1) {
-        //
-    }
 }
 
 function printGroupPersons(Id,thisGroup) {
