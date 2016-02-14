@@ -57,17 +57,9 @@ function listGetFirst(){
 }
 
 function listGetNext(pos){
-    if (pos.next){
-        return pos.next;
-    }else{
-        return null;
-    }
+    return pos.next;
 }
 
 function listGetData(pos){
-    if (pos){
-        return pos.data;
-    }else{
-        return null;
-    }
+    return pos.data;
 }
