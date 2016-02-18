@@ -206,14 +206,10 @@ function printGroup(group,isRecursive,itr){
     }
     itr++;
 
-    //var groupTable = new Table();
-    //groupTable.push(["TYPE","Name","Id","Parent id"]);
-
     if (group == root || !isRecursive) {
         printGroupContacts(group.id, group.name, indent);
     }
     else {
-        //groupTable.push([group.type,group.name, group.id, group.parentGroupId]);
         console.log(indent + "\<group\> " + group.name);
         printGroupContacts(group.id, group.name, indent);
     }
@@ -226,36 +222,21 @@ function printGroup(group,isRecursive,itr){
                 printGroup(childGroup, true, itr);
             }
             else{
-                //groupTable.push([childGroup.type,childGroup.name, childGroup.id, childGroup.parentGroupId]);
                 console.log(indent + "\<group\> " + childGroup.name);
             }
         }
     }
-    /*
-    if (!isRecursive && groupTable.length>1){
-        console.log(groupTable.toString());
-    }
-    */
 }
 
 function printGroupContacts(Id,thisGroup,indent) {
-    //var contactsTable = new Table();
-    //contactsTable.push(["TYPE","First name","Last name","Phone number","ID"]);
     var contact;
 
     for (var contactsIndex=0; contactsIndex<contacts.length; contactsIndex++){
         contact = contacts[contactsIndex];
         if (contact.groupId == Id){
             console.log(indent + "    \<contact\> " + contact.firstName +" "+contact.lastName +" :: "+contact.phoneNums.join(" , "));
-            //contactsTable.push([contact.type,contact.firstName,contact.lastName,contact.phoneNums.join(" , "),contact.id]);
         }
     }
-    /*
-    if (contactsTable.length>1){
-        console.log("Contacts under "+thisGroup+" ::");
-        console.log(indent + contactsTable.toString());
-    }
-    */
 }
 
 function handleFind(){
