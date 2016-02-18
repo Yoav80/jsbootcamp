@@ -3,7 +3,6 @@
  */
 'use strict';
 
-//var Table = require('cli-table');
 var readlineSync = require('readline-sync');
 
 var ID = 0;
@@ -199,20 +198,21 @@ function printCurrentGroup(){
 }
 
 function printGroup(group,isRecursive,itr){
-    var indent = "";
 
+    var indent = "";
     for (var indentInd=0; indentInd<itr; indentInd++){
         indent += "\t";
     }
     itr++;
 
-    if (group == root || !isRecursive) {
-        printGroupContacts(group.id, group.name, indent);
+    if (group == root) {
+        console.log(group.name + ">");
     }
     else {
-        console.log(indent + "\<group\> " + group.name);
-        printGroupContacts(group.id, group.name, indent);
+        console.log(indent + "\<group\> " + " id: " +group.id + "name: " +group.name);
     }
+
+    printGroupContacts(group.id, group.name, indent);
 
     var childGroup;
     for (var groupIndex=0;groupIndex<groups.length;groupIndex++) {
@@ -222,7 +222,7 @@ function printGroup(group,isRecursive,itr){
                 printGroup(childGroup, true, itr);
             }
             else{
-                console.log(indent + "\<group\> " + childGroup.name);
+                console.log(indent + "\<group\> " + childGroup.name + " id: " +childGroup.id);
             }
         }
     }
@@ -230,7 +230,6 @@ function printGroup(group,isRecursive,itr){
 
 function printGroupContacts(Id,thisGroup,indent) {
     var contact;
-
     for (var contactsIndex=0; contactsIndex<contacts.length; contactsIndex++){
         contact = contacts[contactsIndex];
         if (contact.groupId == Id){
@@ -303,16 +302,27 @@ function deleteContact(idTodel){
 
 function handleDelete(){
     console.log();
+
     while (!idToDelete) {
         var idToDelete = readlineSync.question("which id?");
     }
-    if (!Number(idToDelete)){
+
+    idToDelete = Number(idToDelete);
+    if (!idToDelete){
         console.log("Please enter a number");
         handleDelete();
+        return;
     }
+
+    if (!findGroupById(idToDelete) && !findContactById(idToDelete)){
+        console.log("could'nt find an item with that id.");
+        return;
+    }
+
     while (!isSure) {
         var isSure = readlineSync.question("Are you sure? [y/n]");
     }
+
     if (isSure == "y"){
         deleteItemByID(idToDelete);
     }else{
@@ -322,18 +332,10 @@ function handleDelete(){
 
 function deleteItemByID(idToDel){
     var group;
-    var found = false;
-    idToDel = Number(idToDel);
-    if (!idToDel) {
-        console.log("No ID was passed");
-        return;
-    }
-    else{
-        console.log("Searching id: "+idToDel);
-    }
+    var contact;
 
     for (var contactsIndex=0; contactsIndex<contacts.length; contactsIndex++){
-        var contact = contacts[contactsIndex];
+        contact = contacts[contactsIndex];
         if (contact.id == idToDel){
             console.log("deleting contact: " + contact.firstName + " " + contact.lastName);
             contacts.splice(contactsIndex, 1);
@@ -341,10 +343,17 @@ function deleteItemByID(idToDel){
         }
     }
 
+    for (var subGroupsIndex = 0; subGroupsIndex < groups.length; subGroupsIndex++) {
+        group = groups[subGroupsIndex];
+        if (group && group.parentGroupId == idToDel) {
+            deleteItemByID(group.id);
+            subGroupsIndex--;
+        }
+    }
+
     for (var groupIndex=0; groupIndex<groups.length; groupIndex++){
         group = groups[groupIndex];
         if (group.id == idToDel){
-            found = true;
             deleteContactByGroupId(group.id);
             console.log("deleting group: " + group.name);
             if (group === currentGroup){
@@ -353,19 +362,6 @@ function deleteItemByID(idToDel){
             groups.splice(groupIndex, 1);
             groupIndex--;
         }
-    }
-
-    if (found) {
-        for (var subGroupsIndex = 0; subGroupsIndex < groups.length; subGroupsIndex++) {
-            group = groups[subGroupsIndex];
-            if (group && group.parentGroupId == idToDel) {
-                deleteItemByID(group.id);
-                subGroupsIndex--;
-            }
-        }
-    }
-    else{
-        console.log("could'nt find an item with that id.")
     }
 }
 
