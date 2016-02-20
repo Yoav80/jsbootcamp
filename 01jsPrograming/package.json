@@ -1,21 +1,15 @@
 {
-  "name": "phonebook",
+  "name": "01jsprograming",
   "version": "1.0.0",
-  "description": "",
+  "description": "console phone book app",
   "main": "phonebook.js",
-  "directories": {
-    "test": "test"
-  },
   "dependencies": {
-    "cli-table": "^0.3.1",
-    "line-reader-sync": "^0.1.0",
-    "prompt": "^1.0.0",
     "readline-sync": "^1.3.1"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "yoav melkman",
   "license": "ISC"
 }

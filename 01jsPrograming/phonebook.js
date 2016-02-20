@@ -11,17 +11,17 @@ var root = null;
 var contacts = [];
 var groups = [];
 
-var ADD_CONTACT = "0";
-var ADD_NEW_GROUP = "1";
-var CHANGE_CURRENT_GROUP = "2";
-var PRINT_CURRENT_GROUP = "3";
-var PRINT_ALL = "4";
-var FIND = "5";
-var DELETE = "6";
-var EXIT = "7";
+var ADD_CONTACT = "1";
+var ADD_NEW_GROUP = "2";
+var CHANGE_CURRENT_GROUP = "3";
+var PRINT_CURRENT_GROUP = "4";
+var PRINT_ALL = "5";
+var FIND = "6";
+var DELETE = "7";
+var EXIT = "8";
 
 init();
-initialData();
+addTestData();
 displayMenu();
 
 function init(){
@@ -32,8 +32,7 @@ function init(){
         type:'group'
     };
     groups.push(group);
-    currentGroup = group;
-    root = group;
+    currentGroup = root = group;
 }
 
 function displayMenu(){
@@ -52,7 +51,7 @@ function displayMenu(){
 
         console.log();
         for (var menuIndex=0; menuIndex<menu.length; menuIndex++){
-            console.log(menuIndex+": " + menu[menuIndex]);
+            console.log((menuIndex+1)+": " + menu[menuIndex]);
         }
         inputCmd = readlineSync.question(currentGroup.name + ">");
 
@@ -96,42 +95,57 @@ function displayMenu(){
 
 function handleAddContact(){
     console.log();
-    var contactNumbers = [];
 
-    while (!contactFirstName) {
-        var contactFirstName = readlineSync.question("First name?");
+    var contactFirstName = readlineSync.question("enter first name >");
+    if (!contactFirstName){
+        console.log("no name was entered");
+        return;
     }
-    while(!contactLastName) {
-        var contactLastName = readlineSync.question("Last name?");
-    }
+
+    var contactLastName = readlineSync.question("enter last name >");
+    //not mandatory
+    /*if (!contactLastName){
+        console.log("nothing was entered");
+        return;
+    }*/
+
+    var phoneNumbers = [];
     while(true) {
-        var numInput = readlineSync.question("phone number? (end with 'x')");
-        if (numInput == "x"){
-            if (contactNumbers.length>0) {
+        var phone = readlineSync.question("enter phone number >");
+        if (phone == "x"){
+            if (phoneNumbers.length>0) {
                 break;
             }
             else{
-                console.log("at least one number has to be entered");
+                console.log("no phone number was entered");
+                return;
             }
         }
-        else{
-            if (Number(numInput)) {
-                contactNumbers.push(numInput);
+        else if (!phone){
+            if (phoneNumbers.length>0) {
+                break;
             }
             else{
-                console.log("please enter a valid number");
+                console.log("no phone number was entered");
+                return;
             }
         }
+        else if (Number(phone)) {
+            phoneNumbers.push(phone);
+        }
+        else{
+            console.log("please enter a valid number (digits only)");
+        }
     }
-    addContact(contactFirstName, contactLastName, contactNumbers);
+    addContact(contactFirstName, contactLastName, phoneNumbers);
 }
 
-function addContact(firstName,lastName,phonenums){
+function addContact(firstName,lastName,phoneNumbers){
     var contact = {
         id:generateId(),
         firstName:firstName,
         lastName:lastName,
-        phoneNums:phonenums,
+        phoneNums:phoneNumbers,
         groupId:currentGroup.id,
         type:"contact"
     };
@@ -141,8 +155,11 @@ function addContact(firstName,lastName,phonenums){
 
 function handleAddGroup(){
     console.log();
-    while (!newGroupName) {
-        var newGroupName = readlineSync.question("Group name?");
+
+    var newGroupName = readlineSync.question("enter group name >");
+    if (!newGroupName){
+        console.log("nothing was entered");
+        return;
     }
     addGroup(newGroupName);
 }
@@ -161,8 +178,11 @@ function addGroup(name){
 
 function handleChangeCurrentGroup(){
     console.log();
-    while (!destination) {
-        var destination = readlineSync.question("where to?");
+
+    var destination = readlineSync.question("enter group name ( '..' for parent group) >");
+    if (!destination){
+        console.log("nothing was entered");
+        return;
     }
     changeCurrentGroup(destination);
 }
@@ -173,7 +193,7 @@ function changeCurrentGroup(name){
             currentGroup = findGroupById(currentGroup.parentGroupId);
         }
         else{
-            //At root - do nothing
+            //At the root - do nothing
             console.log("you are at the root.")
         }
     }
@@ -181,35 +201,36 @@ function changeCurrentGroup(name){
         var group = findGroupByName(name);
         if (group && group.parentGroupId == currentGroup.id){
             currentGroup = group;
-        }else{
-            console.log("no group with that name was found");
+        }
+        else{
+            console.log("no group with that name was found here");
         }
     }
 }
 
 function printAll(){
     console.log();
-    printGroup(root,true,0);
+    printGroup(root,true);
 }
 
 function printCurrentGroup(){
     console.log();
-    printGroup(currentGroup,false,0);
+    printGroup(currentGroup,false);
 }
 
 function printGroup(group,isRecursive,itr){
-
     var indent = "";
+    itr = itr ? itr : 0;
     for (var indentInd=0; indentInd<itr; indentInd++){
         indent += "\t";
     }
     itr++;
 
-    if (group == root) {
-        console.log(group.name + ">");
+    if (group === root) {
+        console.log(root.name + ">");
     }
     else {
-        console.log(indent + "\<group\> " + " id: " +group.id + "name: " +group.name);
+        console.log(indent + "\<GROUP\> name:" + group.name + " | id:" + group.id);
     }
 
     printGroupContacts(group.id, group.name, indent);
@@ -221,8 +242,8 @@ function printGroup(group,isRecursive,itr){
             if (isRecursive) {
                 printGroup(childGroup, true, itr);
             }
-            else{
-                console.log(indent + "\<group\> " + childGroup.name + " id: " +childGroup.id);
+            else {
+                console.log(indent + "\<GROUP\> name:" + childGroup.name + " | id:" + childGroup.id);
             }
         }
     }
@@ -233,140 +254,125 @@ function printGroupContacts(Id,thisGroup,indent) {
     for (var contactsIndex=0; contactsIndex<contacts.length; contactsIndex++){
         contact = contacts[contactsIndex];
         if (contact.groupId == Id){
-            console.log(indent + "    \<contact\> " + contact.firstName +" "+contact.lastName +" :: "+contact.phoneNums.join(" , "));
+            console.log(indent + "    \<CONTACT\> name:" + contact.firstName + " " + contact.lastName +
+                " | phone numbers:" + contact.phoneNums.join(" , ") + " | id:" + contact.id);
         }
     }
 }
 
 function handleFind(){
     console.log();
-    while (!what) {
-        var what = readlineSync.question("what?");
+
+    var what = readlineSync.question("enter name >");
+    if (!what){
+        console.log("nothing was entered");
+        return;
     }
     find(what);
 }
 
 function find(str){
-    if (!str) {
-        console.log("No string was passed");
-        return;
-    }
-
     var group;
     var contact;
-    var matchesTable = new Table();
-    matchesTable.push(["Full Name","Phone number","Id","Type"]);
     var findStr = str.toLowerCase();
+    var match = false;
 
     for (var groupIndex=0; groupIndex<groups.length; groupIndex++){
         group = groups[groupIndex];
         if (group.name.toLowerCase() == str){
-            matchesTable.push([group.name,group.type,group.id]);
+            match = true;
+            console.log("\<GROUP\> name:" + group.name + " id:" + group.id);
         }
     }
 
     for (var contactsIndex=0; contactsIndex<contacts.length; contactsIndex++){
         contact = contacts[contactsIndex];
         if (contact.firstName == findStr || contact.lastName == findStr){
-            matchesTable.push([contact.firstName+ " " + contact.lastName,contact.phoneNums.join(" , "), contact.id, contact.type]);
+            match = true;
+            console.log("\<CONTACT\> name:" + contact.firstName+ " " + contact.lastName +
+                " | phone numbers:" + contact.phoneNums.join(" , ") + " | id:" + contact.id);
         }
     }
-    if (matchesTable.length>1){
-        console.log("Found the next matches::");
-        console.log(matchesTable.toString());
-    }else{
+    if (!match){
         console.log("No group or contact was found");
-    }
-}
-
-function deleteContactByGroupId(idToDel){
-    for (var contactsIndex=0; contactsIndex<contacts.length; contactsIndex++){
-        if (contacts[contactsIndex].groupId == idToDel){
-            console.log("deleting contact: " + contacts[contactsIndex].id);
-            contacts.splice(contactsIndex, 1);
-            --contactsIndex;
-        }
-    }
-    return 0;
-}
-
-function deleteContact(idTodel){
-    var indOfcontactToDel = findContactById(idTodel);
-    if (indOfcontactToDel){
-        console.log("deleting contact: " + idTodel);
-        contacts.splice(indOfcontactToDel, 1);
-    }else{
-        console.log("No contact with that id was found.");
     }
 }
 
 function handleDelete(){
     console.log();
 
-    while (!idToDelete) {
-        var idToDelete = readlineSync.question("which id?");
-    }
-
+    var idToDelete = readlineSync.question("enter id >");
     idToDelete = Number(idToDelete);
+
     if (!idToDelete){
-        console.log("Please enter a number");
-        handleDelete();
+        console.log("no valid id was entered.");
         return;
     }
 
-    if (!findGroupById(idToDelete) && !findContactById(idToDelete)){
-        console.log("could'nt find an item with that id.");
+    var groupToDelete = findGroupById(idToDelete);
+    var contactIndexToDelete = findContactIndexById(idToDelete);
+
+    if (!groupToDelete && !contactIndexToDelete){
+        console.log("no item with that id was found");
         return;
+    }
+    else {
+        var nameOfItemToDelete = groupToDelete ? "\<GROUP\> " + groupToDelete.name :
+            "\<CONTACT\> " + contacts[contactIndexToDelete].firstName + " " + contacts[contactIndexToDelete].lastName;
     }
 
     while (!isSure) {
-        var isSure = readlineSync.question("Are you sure? [y/n]");
+        var isSure = readlineSync.question("Are you sure you want to delete " + nameOfItemToDelete + " ? [y/n]");
     }
 
     if (isSure == "y"){
-        deleteItemByID(idToDelete);
-    }else{
-        return;
+        if (groupToDelete) {
+            deleteGroupByID(groupToDelete.id);
+        }
+        else {
+            deleteContactByIndex(contactIndexToDelete);
+        }
     }
 }
 
-function deleteItemByID(idToDel){
+function deleteGroupByID(idToDel){
     var group;
     var contact;
-
-    for (var contactsIndex=0; contactsIndex<contacts.length; contactsIndex++){
-        contact = contacts[contactsIndex];
-        if (contact.id == idToDel){
-            console.log("deleting contact: " + contact.firstName + " " + contact.lastName);
-            contacts.splice(contactsIndex, 1);
-            return 0;
-        }
-    }
-
     for (var subGroupsIndex = 0; subGroupsIndex < groups.length; subGroupsIndex++) {
         group = groups[subGroupsIndex];
         if (group && group.parentGroupId == idToDel) {
-            deleteItemByID(group.id);
+            deleteGroupByID(group.id);
             subGroupsIndex--;
         }
     }
-
     for (var groupIndex=0; groupIndex<groups.length; groupIndex++){
         group = groups[groupIndex];
         if (group.id == idToDel){
-            deleteContactByGroupId(group.id);
-            console.log("deleting group: " + group.name);
+            deleteContactsByGroupId(group.id);
             if (group === currentGroup){
                 changeCurrentGroup("..");
             }
+            console.log("deleting group: " + group.name);
             groups.splice(groupIndex, 1);
             groupIndex--;
         }
     }
 }
 
-function generateId(){
-    return ID++;
+function deleteContactByIndex(contactIndex){
+    console.log("deleting contact: " + contacts[contactIndex].firstName + " " + contacts[contactIndex].lastName);
+    contacts.splice(contactIndex, 1);
+    return;
+}
+
+function deleteContactsByGroupId(groupId){
+    for (var contactIndex=0; contactIndex<contacts.length; contactIndex++){
+        if (contacts[contactIndex].groupId == groupId){
+            deleteContactByIndex(contactIndex);
+            contactIndex--;
+        }
+    }
+    return;
 }
 
 function findGroupById(ID){
@@ -385,7 +391,7 @@ function findGroupByName(str){
     }
 }
 
-function findContactById(ID){
+function findContactIndexById(ID){
     for (var contactIndex=0; contactIndex<contacts.length; contactIndex++){
         if (contacts[contactIndex].id == ID){
             return contactIndex;
@@ -393,7 +399,11 @@ function findContactById(ID){
     }
 }
 
-function initialData() {
+function generateId(){
+    return ID++;
+}
+
+function addTestData() {
     addContact('yoav', 'melkman', ['0542011802', '05555555']);
     addContact('joe', 'gggg', ['8787878', '7878787878']);
     addGroup("friends");
@@ -407,11 +417,4 @@ function initialData() {
     changeCurrentGroup('..');
     changeCurrentGroup('..');
     addGroup("test2");
-
-    //printCurrentGroup();
-    //printAll();
-    //find("gg");
-    //deleteItemByID(3);
-    //printAll();
-    //deleteItemByID(2);
 }
