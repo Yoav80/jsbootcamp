@@ -1,0 +1,78 @@
+body,html{
+    margin: 0;
+    padding: 0;
+    font-family: Arial;
+}
+header{
+    min-height: 80px;
+    border-bottom: 1px solid lightgray;
+    padding: 20px 10%;
+    /*width: 100%;*/
+}
+
+footer{
+    clear: both;
+    min-height: 80px;
+    border-top:1px solid lightgray;
+    padding: 20px 10%;
+    /*width: 100%;*/
+}
+
+aside{
+    min-height: 300px;
+    width: 20%;
+    float: left;
+    padding-left: 10%;
+}
+
+section{
+    min-height: 400px;
+    width: 60%;
+    float: right;
+    padding-right: 10%;
+    padding-bottom: 20px;
+}
+
+section nav {
+    padding: 10px 0 10px 5px;
+}
+
+section nav a {
+    padding-right: 10px;
+    text-decoration: underline;
+}
+
+section #searchInput {
+    width: 90%;
+    box-sizing: border-box;
+    height: 30px;
+}
+
+section #searchBtn {
+    width: 10%;
+    box-sizing: border-box;
+    height: 30px;
+}
+
+#directory ul{
+    padding: 10px 0 0 5px;
+}
+
+#directory ul li {
+    cursor: pointer;
+    list-style-type: none;
+    empty-cells: show;
+}
+
+#contactsTable table {
+    width: 100%;
+}
+
+#contactsTable thead{
+    font-weight: bold;
+}
+
+#contactsTable th, td {
+    border-bottom: 1px solid #ddd;
+    height: 25px;
+}
