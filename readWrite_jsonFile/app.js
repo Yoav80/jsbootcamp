@@ -36,6 +36,7 @@ function handleData(err,data){
     }
     else {
         if (data) {
+
             console.log("data loaded, parsing...");
             var dataObject = {
                 itemInDataIndex: 0,
@@ -244,7 +245,7 @@ function printItem(item,indent){
         console.log(indent + "--Contact name: "
             + item.firstName + " " + item.lastName
             + " , Contact Id: " + item.id
-            + " , " + item.phoneNumbers);
+            + " , Phones: " + item.phoneNumbers);
     }
 }
 
@@ -294,18 +295,13 @@ function deleteItem(){
     }
 
     if (isSure == "y"){
-        //** method 3 for deleting
-        //var parentArr = item.parent.items;
-        //var indexToRemove = parentArr.indexOf(item);
-        //if (indexToRemove != -1) {
-        //    delete parentArr[indexToRemove];
-        //}
-
         //** method 2 for deleting
         var parentArr = item.parent.items;
-        var indexToRemove = parentArr.indexOf(item);
-        if (indexToRemove != -1) {
-            parentArr.splice(indexToRemove, 1);
+        if (parentArr) {
+            var indexToRemove = parentArr.indexOf(item);
+            if (indexToRemove != -1) {
+                parentArr.splice(indexToRemove, 1);
+            }
         }
 
         //method one for deleting
@@ -382,14 +378,16 @@ function createFlatArr(item, flatArray){
         obj = {
             "type": item.type,
             "name": item.name,
-            "numOfChildes": item.items.length
+            "numOfChildes": item.items.length,
+            "id":item.id
         };
     }
     else{
         obj = {
             "type": item.type,
             "name": item.firstName + " " + item.lastName,
-            "phoneNumbers": item.phoneNumbers
+            "phoneNumbers": item.phoneNumbers,
+            "id":item.id
         };
     }
 
@@ -406,7 +404,7 @@ function createFlatArr(item, flatArray){
 
 function createContact(args) {
     return {
-        id: generateNextId(),
+        id: args.id ? args.id : generateNextId(),
         firstName: args.firstName ? args.firstName : "",
         lastName: args.lastName ? args.lastName : "",
         phoneNumbers: args.phoneNumbers ? args.phoneNumbers : [],
@@ -417,7 +415,7 @@ function createContact(args) {
 
 function  createGroup(args) {
     return {
-        id: generateNextId(),
+        id: args.id ? args.id : generateNextId(),
         name: args.name ? args.name : "",
         items: args.items ? args.items : [],
         type: "Group",
