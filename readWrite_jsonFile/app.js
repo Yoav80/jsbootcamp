@@ -38,6 +38,7 @@ function handleData(err,data){
         if (data) {
 
             console.log("data loaded, parsing...");
+
             var dataObject = {
                 itemInDataIndex: 0,
                 data:JSON.parse(data)
@@ -48,7 +49,6 @@ function handleData(err,data){
             console.error("data file is empty");
         }
     }
-
     initialise();
 }
 
@@ -56,6 +56,7 @@ function createItemsFromJson(dataObject, parentGroup){
 
     var itemIndex = dataObject.itemInDataIndex++;
     var dataItem = dataObject.data[itemIndex];
+
     dataItem.parent = parentGroup;
 
     if (dataItem.type == "Contact"){
@@ -68,14 +69,14 @@ function createItemsFromJson(dataObject, parentGroup){
     else if (dataItem.type == "Group") {
         var group = createGroup(dataItem);
 
-        if (parentGroup === null) { //if root is null
+        if (parentGroup === null){ //if root is null
             root = currentGroup = group;
         }
-        else {
+        else{
             parentGroup.items.push(group);
         }
 
-        if (dataItem.numOfChildes > 0) {
+        if (dataItem.numOfChildes > 0){
             for (var subIndex = 0; subIndex < dataItem.numOfChildes; subIndex++) {
                 createItemsFromJson(dataObject, group);
             }
@@ -88,7 +89,6 @@ function initialise(){
         var args = {
             name: "~"
         };
-
         root = currentGroup = createGroup(args);
     }
 
