@@ -1,0 +1,1 @@
+{"version":3,"file":"network.js","sourceRoot":"","sources":["network.ts"],"names":["httpGet","httpPost"],"mappings":"AAAA;;GAEG;AAEH,iBAAwB,GAAG;IACvBA,OAAOA,CAACA,GAAGA,CAACA,WAAWA,GAAGA,GAAGA,CAACA,CAACA;AACnCA,CAACA;AAFe,eAAO,UAEtB,CAAA;AAED;AAEAC,CAACA;AAFe,gBAAQ,WAEvB,CAAA"}

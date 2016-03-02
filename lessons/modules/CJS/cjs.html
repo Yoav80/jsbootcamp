@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AMD ( require js )</title>
+    <script src="./lib/system.src.js"></script>
+</head>
+<body>
+    <script>
+        System.config({
+            defaultJSExtensions:true
+        });
+        System.import("testCJS");
+
+    </script>
+</body>
+</html>

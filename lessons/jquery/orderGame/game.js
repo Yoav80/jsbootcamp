@@ -1,18 +1,18 @@
 /**
  * Created by y_mil on 2/29/2016.
  */
+'use strict';
 
 ($(document).ready(function () {
 
     var numOfItems = 9;
-
     var isMouseDown = false;
     var isDragging = false;
     var isMobile = false;
 
     var draggedSrc = null;
     var draggedItem = null;
-
+    var itemsIdArr = [];
     var itemsContainer = $("#itemsContainer");
     var containerOffsetX = itemsContainer.offset().left;
     var containerOffsetY = itemsContainer.offset().top;
@@ -34,11 +34,15 @@
     function buildGameItems(){
 
         for (var index=0; index<numOfItems; index++){
+
             var itemsContainer = $("#itemsContainer");
             itemsContainer.append("<div id=" +index +"></div>");
             itemsContainer.bind("mouseleave", onMouseLeave);
+            itemsIdArr.push(index);
 
+            var imageUrl = "./images/" + (index + 1 ) + "-6ZzM1GGwaR.jpg";
             var item = $("#itemsContainer #" + (index));
+
             $(item).addClass("item");
             $(item).css('background-image','url('+imageUrl+')');
             $(item).bind(isMobile ?'touchstart' : 'mousedown', onMouseDown);
@@ -58,7 +62,7 @@
         e.preventDefault();
         if (!e.currentTarget.id) return;
 
-        isMouseDown = true;
+        isDragging = true;
 
         draggedSrc = $('#' + e.currentTarget.id);
         startDrag(draggedSrc,e);
@@ -89,7 +93,7 @@
     }
 
     function onMouseUp(e){
-        isMouseDown = false;
+        //isMouseDown = false;
 
         if (isDragging){
 
@@ -114,8 +118,7 @@
     }
 
     function onMouseMove(e){
-        if (isMouseDown){
-            isDragging = true;
+        if (isDragging){
             var dragW = $(draggedItem).outerWidth();
             var dragH = $(draggedItem).outerHeight();
             var posX = isMobile ? e.originalEvent.touches[0].pageX : e.pageX;
@@ -146,25 +149,48 @@
         isDragging = false;
 
         if (dropObject){
-            var dropTarget = dropObject.item;
-            var dropDir = dropObject.dir;
-            var item = draggedSrc.detach();
+            console.log(itemsIdArr);
 
-            item.css("visibility", "visible");
-            if (dropDir == "left") {
-                item.insertBefore(dropTarget);
-            }
-            else {
-                item.insertAfter(dropTarget);
-            }
+            var dropTargetID = dropObject.item[0].id;
+            var sourceID = draggedSrc[0].id;
+
+            var dropIndex = itemsIdArr.indexOf(Number(dropTargetID));
+            var sourceIndex = itemsIdArr.indexOf(Number(sourceID));
+
+            var tempID = itemsIdArr[dropIndex];
+            itemsIdArr[dropIndex] = itemsIdArr[sourceIndex];
+            itemsIdArr[sourceIndex] = tempID;
+
+            console.log(itemsIdArr);
         }
         else {
-            draggedSrc.css("visibility", "visible");
+            //draggedSrc.css("visibility", "visible");
         }
+        //
+        //if (dropObject){
+        //    var dropTarget = dropObject.item;
+        //    var dropDirection = dropObject.dir;
+        //    var item = draggedSrc.detach();
+        //
+        //    item.css("visibility", "visible");
+        //    if (dropDirection == "left") {
+        //        item.insertBefore(dropTarget);
+        //    }
+        //    else {
+        //        item.insertAfter(dropTarget);
+        //    }
+        //}
+        //else {
+        //    draggedSrc.css("visibility", "visible");
+        //}
+
+        draggedSrc.css("visibility", "visible");
 
         $(draggedItem).remove();
         draggedItem = null;
         draggedSrc = null;
+
+        reorderItems();
     }
 
     function getElementsByEvent(e){
@@ -200,8 +226,8 @@
                 else{
                     dir = "left";
                 }
-                console.log( clickX > range.x[0] + $(this).width()/2 );
-                console.log( "x: " +  clickX , range.x[0] , $(this).width()/2 );
+                //console.log( clickX > range.x[0] + $(this).width()/2 );
+                //console.log( "x: " +  clickX , range.x[0] , $(this).width()/2 );
                 //console.log("y: " + clickY , range.y[0] , range.y[1]);
 
                 itemMatches.push({item:$(this), dir:dir});
@@ -212,13 +238,17 @@
         return itemMatches;
     }
 
-    function shuffle(){
-        var indexArr = shuffleArray(indexArr);
+    function reorderItems(){
         for (var index=0; index<numOfItems; index++){
-            console.log($("#"+indexArr[index]))
-            var item = $("#"+indexArr[index]).detach();
-            $("#itemsContainer").prepend(item);
+            var item = $("#"+itemsIdArr[index]).detach();
+            $("#itemsContainer").append(item);
         }
+    }
+
+    function shuffle(){
+        itemsIdArr = shuffleArray(itemsIdArr);
+        reorderItems();
+
     }
 
     function shuffleArray(array) {
@@ -233,7 +263,7 @@
 
     function submitGame(){
         var resault = true;
-        $("#itemsContainer .item").each(function(index){
+        $("#itemsContainer").children().each(function(index){
             //console.log("index: " + index, "this: " + this.id, index == this.id);
             if (index != this.id){
                 resault = false;
@@ -252,10 +282,10 @@
 
     function detectMobile() {
         // return /Mobi/.test(navigator.userAgent);
-        var mobileChecker = $('.isMobile');
-        console.log("mobileChecker.css('display'): ", mobileChecker.css('display'));
 
+        var mobileChecker = $('.isMobile');
         return mobileChecker.css('display') == 'block';
+        //console.log("mobileChecker.css('display'): ", mobileChecker.css('display'));
     }
 
 }));

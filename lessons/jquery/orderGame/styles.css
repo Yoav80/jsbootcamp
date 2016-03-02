@@ -13,6 +13,7 @@ html,body {
     padding: 0px;
     box-sizing: border-box;
     max-width: 600px;
+    min-width: 300px;
     position: relative;
     background-color: black;
 }
@@ -49,7 +50,6 @@ html,body {
     background-color: #8F7337;
     border: none;
     border-radius: 8px;
-    min-height: 50px;
     padding: 15px;
     color: white;
     font-size: 22px;
@@ -57,8 +57,9 @@ html,body {
     text-shadow: 0 1px 1px rgba(0,0,0,.1);
     font-weight: 900;
     -webkit-font-smoothing: antialiased;
-    display: inline;
+    display: inline-block;
     margin: 5px;
+    box-sizing: content-box;
 }
 
 #submitBtn {
@@ -84,6 +85,7 @@ html,body {
     #itemsContainer, #buttonsContainer {
         width: 92%;
         max-width: none;
+        min-width: 200px;
         margin-bottom: 50px;
     }
 
