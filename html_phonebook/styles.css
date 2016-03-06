@@ -1,78 +1,166 @@
-body,html{
+body,html {
     margin: 0;
     padding: 0;
     font-family: Arial;
 }
-header{
-    min-height: 80px;
-    border-bottom: 1px solid lightgray;
-    padding: 20px 10%;
-    /*width: 100%;*/
+
+html {
+    position: relative;
+    min-height: 100%;
 }
 
-footer{
-    clear: both;
-    min-height: 80px;
-    border-top:1px solid lightgray;
-    padding: 20px 10%;
-    /*width: 100%;*/
+body {
+    margin: 0 0 80px;
 }
 
-aside{
-    min-height: 300px;
-    width: 20%;
+header {
+    min-height: 80px;
+    border-bottom: 5px solid lightgray;
+    padding: 20px 5%;
+    /*width: 100%;*/
+    background-color: black;
+    color: white;
+    margin-bottom: 20px;
+}
+
+aside {
+    width: 25%;
     float: left;
-    padding-left: 10%;
+    padding-left: 5%;
+    max-width: 200px;
+    min-width: 150px;
 }
 
-section{
+    #directory ul {
+        padding: 10px 0 0 5px;
+    }
+
+    #directory ul li {
+        list-style-type: none;
+        empty-cells: show;
+    }
+
+    #directory ul li.current {
+        font-weight: bold;
+    }
+
+section {
     min-height: 400px;
-    width: 60%;
-    float: right;
-    padding-right: 10%;
+    width: 63%;
+    float: left;
+    padding-right: 2%;
     padding-bottom: 20px;
+    padding-left: 5%;
+    min-width: 491px;
 }
+    section div {
+        padding-top: 10px;
+    }
 
-section nav {
-    padding: 10px 0 10px 5px;
-}
+    section nav {
+        padding: 10px 0 15px 0
+    }
 
-section nav a {
-    padding-right: 10px;
-    text-decoration: underline;
-}
+    section nav a {
+        padding-right: 20px;
+        text-decoration: underline;
+    }
 
-section #searchInput {
-    width: 90%;
-    box-sizing: border-box;
-    height: 30px;
-}
+    section #searchInput {
+        width: 85%;
+        height: 30px;
+    }
 
-section #searchBtn {
-    width: 10%;
-    box-sizing: border-box;
-    height: 30px;
-}
+    section input[type="button"] {
+        width: 11%;
+        cursor: pointer;
+        background-color: #3951A5;
+        padding: 7px;
+        color: white;
+        text-shadow: 0 1px 1px rgba(0,0,0,.1);
+        font-weight: bold;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        box-sizing: content-box;
+        border: 1px solid #3951A5;
+    }
 
-#directory ul{
-    padding: 10px 0 0 5px;
-}
+    section input[type="button"]:hover {
+        border: 1px solid black;
+        text-shadow: 0 1px 1px rgba(0,0,0,.1);
+    }
 
-#directory ul li {
-    cursor: pointer;
-    list-style-type: none;
-    empty-cells: show;
-}
+    section input[type="text"] {
+        box-sizing: border-box;
+        height: 25px;
+        padding-left: 5px;
+    }
 
-#contactsTable table {
+    table {
+        width: 100%;
+    }
+
+    thead {
+        font-weight: bold;
+    }
+
+    th, td {
+        border-bottom: 1px solid #ddd;
+        height: 25px;
+    }
+
+    section #NewContactForm p {
+        width: 350px;
+    }
+
+    section #NewContactForm input {
+        margin-left: 10px;
+        float: right;
+    }
+
+    section #allItemsTableBody {
+        white-space: pre;
+    }
+
+    .groupStyle {
+        background-color: #EFEFEF;
+    }
+
+    .errorMsg {
+        color: red;
+    }
+
+    .inputError {
+        border: 1px solid red;
+    }
+
+footer {
+    clear: both;
+    height: 80px;
+    border-top: 1px solid lightgray;
+    padding: 20px 5%;
     width: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 
-#contactsTable thead{
-    font-weight: bold;
+/*------ helpers ------*/
+
+.active {
+    display: block;
 }
 
-#contactsTable th, td {
-    border-bottom: 1px solid #ddd;
-    height: 25px;
+.inactive {
+    display: none;
+}
+
+.clickable {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.clickable:hover {
+    text-decoration: underline;
 }

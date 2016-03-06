@@ -10,6 +10,7 @@ var groups = [];
 
 init();
 initialData();
+
 createSideMenu();
 populateContactsTable();
 
@@ -29,9 +30,11 @@ function init() {
 function createSideMenu(){
 
     var wrapper = document.getElementById("directory");
+
     var directoryUl = document.createElement("ul");
     directoryUl.id = "directoryUl";
     wrapper.insertBefore(directoryUl,wrapper.firstChild);
+
     createDirectoryItem(root,0,directoryUl);
 
 }
