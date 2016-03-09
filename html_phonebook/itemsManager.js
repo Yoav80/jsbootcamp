@@ -1,5 +1,5 @@
 
-phoneBook = phoneBook || {};
+var phoneBook = phoneBook || {};
 
 phoneBook.itemsManager = ( function(){
     'use strict';
@@ -47,9 +47,10 @@ phoneBook.itemsManager = ( function(){
     }
 
     /**
+     * creates the tree of objects from  JSON array of objects
      *
      * @param dataObject - an object containing flat JSON objects,
-     *        and in index to keep count on the current object being read.
+     *        and an index to keep count on the current object being read.
      * @param parentGroup - pass null to start from top
      * @returns {items} - an object containing all items - root
      */
@@ -321,9 +322,7 @@ phoneBook.itemsManager = ( function(){
         };
     }
 
-    /*
-     *   helpers
-     */
+/* helpers  */
 
     /**
      * @returns {number}

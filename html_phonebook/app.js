@@ -1,13 +1,11 @@
-/**
- * Created by y_mil on 3/2/2016.
- */
+
 var phoneBook = (function() {
 
     "use strict";
 
     function initialise(){
-        this.itemsManager.initialise();
-        this.displayManager.initialise();
+        phoneBook.itemsManager.initialise();
+        phoneBook.displayManager.initialise();
     }
 
     return {
@@ -15,6 +13,17 @@ var phoneBook = (function() {
     }
 })();
 
-($(document).ready(function () {
-    phoneBook.initialise();
-}));
+
+function ready(fn) {
+    if (document.readyState != 'loading'){
+        fn();
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', fn);
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+            if (document.readyState != 'loading')
+                fn();
+        });
+    }
+}
+ready(phoneBook.initialise);

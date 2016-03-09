@@ -1,4 +1,4 @@
-phoneBook = phoneBook || {} ;
+var phoneBook = phoneBook || {} ;
 
 /**
  * An object containing inner html elements for code use

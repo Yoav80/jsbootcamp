@@ -1,7 +1,5 @@
-/**
- * Created by y_mil on 3/2/2016.
- */
-phoneBook = phoneBook || {};
+
+var phoneBook = phoneBook || {};
 
 phoneBook.displayManager = (function (){
     'use strict';
@@ -34,7 +32,7 @@ phoneBook.displayManager = (function (){
         renderDisplay();
     }
 
-    /* builders */
+/* builders */
     /**
      * creates the first ul element for the side menu
      * and calls a recursive function for the rest of the tree
@@ -510,11 +508,15 @@ phoneBook.displayManager = (function (){
      */
     function makeDivActive(id){
 
-        $("section > div").each( function () {
-            $(this).addClass("inactive").removeClass("active");
-        });
+        var divs = document.querySelectorAll("section > div");
+        for (var divIndex = 0; divIndex < divs.length; divIndex++) {
+            divs[divIndex].classList.remove("active");
+            divs[divIndex].classList.add("inactive");
+        }
 
-        $("#" + id).removeClass("inactive").addClass("active");
+        var currentDiv = document.querySelector("#" + id);
+        currentDiv.classList.remove("inactive");
+        currentDiv.classList.add("active");
     }
 
     /**

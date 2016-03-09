@@ -1,11 +1,9 @@
-/**
- * Created by y_mil on 3/6/2016.
- */
 
-phoneBook = phoneBook || {};
+var phoneBook = phoneBook || {};
 
 phoneBook.dataManager = (function () {
     'use strict';
+
     return {
         writeData:writeData,
         readData:readData
