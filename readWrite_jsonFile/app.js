@@ -141,7 +141,7 @@ function handleCommand(line) {
     }
 }
 
-function addNewContact(){
+function  addNewContact(){
     var firstName = readNonEmptyString("First Name: ");
     var lastName = readNonEmptyString("Last Name: ");
     var phoneNumbers = [];
