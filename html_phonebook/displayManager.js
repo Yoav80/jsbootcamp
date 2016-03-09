@@ -4,10 +4,10 @@
 phoneBook = phoneBook || {};
 
 phoneBook.displayManager = (function (){
+    'use strict';
 
     var DEFAULT_VIEW = "contactsTable";
-    var parent = null;
-    //var lastView;
+    var currentView = undefined;
 
     var GROUP_CONTACTS_TABLE_ID = "contactsTable";
     var SEARCH_RESULTS_TABLE_ID = "searchResults";
@@ -22,13 +22,12 @@ phoneBook.displayManager = (function (){
     var PHONES_ERROR_MSG2 = "please enter only numbers";
     var GROUP_NAME_ERROR_MSG = "group name is required";
     var DELETE_ID_ERROR_MSG = "invalid id";
-    
+
     return {
         initialise: initialise
     };
 
-    function initialise(thisParent){
-        parent = thisParent;
+    function initialise(){
 
         createSideMenu();
         setHandlers();
@@ -36,6 +35,10 @@ phoneBook.displayManager = (function (){
     }
 
     /* builders */
+    /**
+     * creates the first ul element for the side menu
+     * and calls a recursive function for the rest of the tree
+     */
     function createSideMenu() {
 
         var wrapper = document.getElementById("directory");
@@ -44,9 +47,15 @@ phoneBook.displayManager = (function (){
         directoryUl.id = "directoryUl";
         wrapper.insertBefore(directoryUl,wrapper.firstChild);
 
-        createSideMenuItem(phoneBook.root,0,directoryUl);
+        createSideMenuItem(phoneBook.itemsManager.getDataObj(),0,directoryUl);
     }
 
+    /**
+     * A recursive function that creates html elements for all groups
+     * @param group - the group object to run on
+     * @param itr - for the indent of subgroups
+     * @param parent - the parent element to append the list item
+     */
     function createSideMenuItem(group,itr,parent) {
 
         var indent = "";
@@ -76,7 +85,9 @@ phoneBook.displayManager = (function (){
         }
     }
 
-    /* set handlers */
+    /**
+     * set the static event listeners
+     */
     function setHandlers(){
         //search
         document.getElementById("searchBtn").addEventListener("click", handleSearch);
@@ -86,54 +97,87 @@ phoneBook.displayManager = (function (){
         document.getElementById("addNewGroup").addEventListener("click", handleNavNewGroup);
         document.getElementById("delete").addEventListener("click", handleNavDelete);
         document.getElementById("showAll").addEventListener("click", handleNavShowAll);
-
-        //add contact form button click
-        document.getElementById("newContactBtn").addEventListener("click", handleAddContact);
-
-        //add group form button click
-        document.getElementById("newGroupBtn").addEventListener("click", handleAddGroup);
-
-        //delete id form button click
-        document.getElementById("deleteIdBtn").addEventListener("click", handleDelete);
+        document.getElementById("resetData").addEventListener("click", handleResetData);
     }
 
-    /* main display function - receives a div id correlating the main functions */
+    /**
+     *  main display function - receives a div id correlating the main functions
+     * @param view - id of container to display, null for the default view
+     */
     function renderDisplay(view) {
 
-        view = view ? view : DEFAULT_VIEW;
+        view = view || DEFAULT_VIEW;
 
         if (view == GROUP_CONTACTS_TABLE_ID) {
+
             populateContactsTable();
         }
         else if (view == SEARCH_RESULTS_TABLE_ID) {
+
             populateSearchResults();
         }
-        else if (view == NEW_CONTACT_FORM_ID) {
-            document.getElementById("fNameInput").value = "";
-            document.getElementById("lNameInput").value = "";
-            document.getElementById("phonesInput").value = "";
-        }
-        else if (view == NEW_GROUP_FORM_ID) {
-            document.getElementById("groupNameInput").value = "";
-        }
-        else if (view == DELETE_FORM_ID) {
-            document.getElementById("deleteIdInput").value = "";
-        }
         else if (view == SHOW_ALL_TABLE_ID) {
+
             populateAllItemsTable();
         }
+        else if (view == NEW_CONTACT_FORM_ID) {
 
+            document.getElementById(NEW_CONTACT_FORM_ID).innerHTML = phoneBook.htmlElements.NEW_CONTACT_FORM_HTML;
+            document.getElementById("newContactBtn").addEventListener("click", handleAddContact);
+            document.getElementById("addPhoneFieldBtn").addEventListener("click", handleAddAnotherPhoneField);
+        }
+        else if (view == NEW_GROUP_FORM_ID) {
+
+            document.getElementById(NEW_GROUP_FORM_ID).innerHTML = phoneBook.htmlElements.NEW_GROUP_FORM_HTML;
+            document.getElementById("newGroupBtn").addEventListener("click", handleAddGroup);
+        }
+        else if (view == DELETE_FORM_ID) {
+
+            document.getElementById(DELETE_FORM_ID).innerHTML = phoneBook.htmlElements.DELETE_FORM_HTML;
+            document.getElementById("deleteIdBtn").addEventListener("click", handleDelete);
+        }
 
         makeDivActive(view);
         updateCurrentGroup();
+        if (currentView != view && currentView != undefined) {
+            clearView(currentView);
+        }
+        currentView = view;
     }
 
-    /* display related functions */
+    /**
+     * clears a view - remove listeners and clear inner html
+     * @param view - id of the container element
+     */
+    function clearView(view) {
+
+        var container = document.getElementById(view);
+        var btn = container.querySelector('[id^="btn"]');
+
+
+        if (btn && btn.id == "newContactBtn") {
+            document.getElementById("newContactBtn").removeEventListener("click", handleAddContact);
+        }
+
+        if (btn && btn.id == "newGroupBtn") {
+            document.getElementById("newGroupBtn").removeEventListener("click", handleAddGroup);
+        }
+
+        if (btn && btn.id == "deleteIdBtn") {
+            document.getElementById("deleteIdBtn").removeEventListener("click", handleDelete);
+        }
+
+        document.getElementById(view).innerHTML = "";
+    }
+
+    /**
+     * updates the view according to the current group
+     */
     function updateCurrentGroup() {
 
         var currentGroupLabel = document.getElementById("currentGroupName");
         if (currentGroupLabel) {
-            currentGroupLabel.innerText = phoneBook.currentGroup.name;
+            currentGroupLabel.innerText = phoneBook.itemsManager.getCurrentGroup().name;
         }
 
         var currentTreeItem = document.getElementsByClassName("current");
@@ -141,17 +185,20 @@ phoneBook.displayManager = (function (){
             currentTreeItem[0].classList.remove("current");
         }
 
-        currentTreeItem = document.getElementById("treeGroup"+phoneBook.currentGroup.id);
+        currentTreeItem = document.getElementById("treeGroup"+phoneBook.itemsManager.getCurrentGroup().id);
         if (currentTreeItem) {
             currentTreeItem.classList.add("current");
         }
     }
 
+    /**
+     * populates the contacts table according to the current group
+     */
     function populateContactsTable() {
 
-        var contactsArr = phoneBook.itemsManager.getCurrentGroupContacts();
+        document.getElementById(GROUP_CONTACTS_TABLE_ID).innerHTML = phoneBook.htmlElements.GROUP_CONTACTS_TABLE_HTML;
         var contactTable = document.getElementById("contactsTableBody");
-        contactTable.innerHTML = "";
+        var contactsArr = phoneBook.itemsManager.getCurrentGroupContacts();
 
         for (var contactIndex=0; contactIndex<contactsArr.length; contactIndex++){
 
@@ -169,13 +216,16 @@ phoneBook.displayManager = (function (){
         }
     }
 
+    /**
+     * populates the search results table according to the matches of the passed string
+     */
     function populateSearchResults() {
 
-        var searchStr = document.getElementById("searchInput").value;
-        var resultsArr = phoneBook.itemsManager.findItemsByName(searchStr,phoneBook.root);
+        document.getElementById(SEARCH_RESULTS_TABLE_ID).innerHTML = phoneBook.htmlElements.SEARCH_RESULTS_TABLE_HTML;
 
         var resultsTable = document.getElementById("searchResultsTableBody");
-        resultsTable.innerHTML = "";
+        var searchStr = document.getElementById("searchInput").value;
+        var resultsArr = phoneBook.itemsManager.findItemsByName(searchStr);
         var row;
 
         if (!resultsArr.length) {
@@ -189,21 +239,27 @@ phoneBook.displayManager = (function (){
 
                 var item = resultsArr[resultIndex];
                 row = resultsTable.insertRow(0);
-
+                row.id = item.id;
                 row.insertCell(0).innerHTML = item.id;
                 row.insertCell(1).innerHTML = item.type;
                 row.insertCell(2).innerHTML = item.type == "Contact" ? item.firstName + " " + item.lastName : item.name;
                 row.insertCell(3).innerHTML = item.type == "Contact" ? item.phoneNumbers.join(" , ") : " - ";
-                row.insertCell(4).innerHTML = "action";
+                row.insertCell(4).innerHTML = "delete";
+                row.cells[4].addEventListener("click", handleSearchResultsTableAction);
+                row.cells[4].classList.add("clickable");
             }
         }
     }
 
+    /**
+     * populates the all items table with all the items
+     */
     function populateAllItemsTable() {
 
-        var allItemsArr = phoneBook.itemsManager.getAllItems(phoneBook.root,0);
+        document.getElementById(SHOW_ALL_TABLE_ID).innerHTML = phoneBook.htmlElements.SHOW_ALL_TABLE_HTML;
+
+        var allItemsArr = phoneBook.itemsManager.getAllItems();
         var resultsTable = document.getElementById("allItemsTableBody");
-        resultsTable.innerHTML = "";
         var row;
 
         for (var resultIndex = 0; resultIndex < allItemsArr.length; resultIndex++){
@@ -218,13 +274,12 @@ phoneBook.displayManager = (function (){
             row.insertCell(0);
             row.cells[0].colSpan = 3;
             row.cells[0].innerHTML = allItemsArr[resultIndex].indent +
-                (item.type == "Group" ? "Group: " : "") +
-                " ID: " + item.id +
+                (item.type == "Group" ? "Group: " : "") + " ID: " + item.id +
                 " | Name: " + (item.type == "Contact" ? item.firstName + " " + item.lastName : item.name) +
                 (item.type == "Contact" ? " | Phones: " + item.phoneNumbers.join(" , ") : "");
 
             row.insertCell(1);
-            if (item != phoneBook.root) {
+            if (item != phoneBook.itemsManager.getDataObj()) {
                 row.cells[1].innerHTML = "delete";
                 row.cells[1].addEventListener("click", handleAllItemsTableAction);
                 row.cells[1].classList.add("clickable");
@@ -232,11 +287,19 @@ phoneBook.displayManager = (function (){
         }
     }
 
-    /* handlers */
+    /**
+     * handle search button click
+     */
     function handleSearch(){
         renderDisplay(SEARCH_RESULTS_TABLE_ID);
+        document.getElementById("searchInput").value = "";
     }
 
+    /**
+     * closure function that returns a function for a side menu click event
+     * @param group - the group to set as current
+     * @returns {Function} - that changes the current group
+     */
     function createSideMenuItemClickHandler(group){
         return function(){
             phoneBook.itemsManager.changeCurrentGroup(group);
@@ -244,26 +307,45 @@ phoneBook.displayManager = (function (){
         }
     }
 
+    /**
+     * handles the contact table row action click - delete contact
+     */
     function handleContactsTableAction() {
-
         var rowID = this.parentElement.id;
-        phoneBook.itemsManager.deleteItem(rowID);
-
-        renderDisplay();
+        deleteItemHandler(rowID);
     }
 
+    /**
+     * handles the all items table row action click - delete item
+     */
     function handleAllItemsTableAction() {
         var rowID = this.parentElement.id;
-        phoneBook.itemsManager.deleteItem(rowID);
-
-        renderDisplay(SHOW_ALL_TABLE_ID);
+        deleteItemHandler(rowID, SHOW_ALL_TABLE_ID);
     }
 
+    /**
+     * handles the search results table row action click - delete item
+     */
+    function handleSearchResultsTableAction() {
+        var rowID = this.parentElement.id;
+        deleteItemHandler(rowID);
+    }
+
+    function deleteItemHandler (id, view) {
+        phoneBook.itemsManager.deleteItem(id);
+        renderDisplay(view);
+    }
+
+    /**
+     * handles the add contact form btn click.
+     * validates fields and calls the add contact item function
+     */
     function handleAddContact() {
 
         var firstName = document.getElementById("fNameInput").value;
         var lastName = document.getElementById("lNameInput").value;
-        var phoneNumbers = document.getElementById("phonesInput").value.split(" ");
+        var phoneInputs = document.querySelectorAll('[id$="phonesInput"]');
+        var phoneNumbers = [];
 
         /* validation */
         var err = false;
@@ -284,16 +366,21 @@ phoneBook.displayManager = (function (){
             displayFormError("lName", LAST_NAME_ERROR_MSG, false);
         }
 
-        if (checkIfEmpty(phoneNumbers)){
-            err = true;
-            displayFormError("phones", PHONES_ERROR_MSG);
-        }
-        else if (!checkIfNumber(phoneNumbers)) {
-            err = true;
-            displayFormError("phones", PHONES_ERROR_MSG2);
-        }
-        else {
-            displayFormError("phones", PHONES_ERROR_MSG2, false);
+        for (var phoneInputIndex = 0; phoneInputIndex < phoneInputs.length; phoneInputIndex++){
+            var elem = phoneInputs[phoneInputIndex];
+
+            if (checkIfEmpty(elem.value)){
+                err = true;
+                displayFormError(phoneInputIndex + "phones", PHONES_ERROR_MSG);
+            }
+            else if (!checkIfNumber(elem.value)) {
+                err = true;
+                displayFormError(phoneInputIndex + "phones", PHONES_ERROR_MSG2);
+            }
+            else {
+                phoneNumbers.push(elem.value);
+                displayFormError(phoneInputIndex + "phones", PHONES_ERROR_MSG2, false);
+            }
         }
 
         if (err) {
@@ -311,6 +398,24 @@ phoneBook.displayManager = (function (){
         renderDisplay();
     }
 
+    /**
+     * handles the another phone input field
+     */
+    function handleAddAnotherPhoneField() {
+        var addPhoneFieldBtn = document.getElementById("addPhoneFieldBtn");
+        var phoneInputs = document.querySelectorAll('[id$="phonesInput"]');
+        var lastPhoneInput = phoneInputs[phoneInputs.length - 1];
+
+        var clone = lastPhoneInput.cloneNode(true);
+        clone.id = phoneInputs.length + "phonesInput";
+        clone.value = "";
+        lastPhoneInput.parentElement.insertBefore( clone, addPhoneFieldBtn );
+    }
+
+    /**
+     * handles the add group form btn click.
+     * validates fields and calls the add group item function
+     */
     function handleAddGroup() {
 
         var groupName = document.getElementById("groupNameInput").value;
@@ -338,11 +443,14 @@ phoneBook.displayManager = (function (){
         renderDisplay();
     }
 
+    /**
+     * handles the delete form btn click - not in use
+     */
     function handleDelete() {
         var id = document.getElementById("deleteIdInput").value;
         var err = false;
 
-        if (!checkIfNumber(id)){
+        if (!checkIfNumber(id) || checkIfEmpty(id)) {
             err = true;
             displayFormError("deleteId", DELETE_ID_ERROR_MSG);
         }
@@ -355,24 +463,51 @@ phoneBook.displayManager = (function (){
         renderDisplay();
     }
 
-    /* nav handlers */
+/* nav handlers */
+
+    /**
+     * handles the nav item "delete group" click
+     * */
     function handleNavDelete() {
-        renderDisplay(DELETE_FORM_ID);
+        phoneBook.itemsManager.deleteItem(phoneBook.itemsManager.getCurrentGroup().id);
+        initialise();
+        //renderDisplay(DELETE_FORM_ID);
     }
 
+    /**
+     * handles the nav item "add contact" click
+     */
     function handleNavNewContact() {
         renderDisplay(NEW_CONTACT_FORM_ID);
     }
 
+    /**
+     * handles the nav item "add contact" click
+     */
     function handleNavNewGroup() {
         renderDisplay(NEW_GROUP_FORM_ID);
     }
 
+    /**
+     * handles the nav item "show all" click
+     */
     function handleNavShowAll() {
         renderDisplay(SHOW_ALL_TABLE_ID);
     }
 
-    /* helpers */
+    /**
+     * handles the nav item "reset to default" click
+     */
+    function handleResetData(){
+        phoneBook.itemsManager.loadDefaults();
+        initialise();
+    }
+
+/* helpers */
+    /**
+     * hides and shows div according to the passed id
+     * @param id
+     */
     function makeDivActive(id){
 
         $("section > div").each( function () {
@@ -382,21 +517,22 @@ phoneBook.displayManager = (function (){
         $("#" + id).removeClass("inactive").addClass("active");
     }
 
+    /**
+     * validation function - checks if value is empty
+     * @param value
+     * @returns {boolean}
+     */
     function checkIfEmpty (value) {
         return value == undefined || value == null || value == "";
     }
 
+    /**
+     * validation function - checks if value is empty
+     * @param itemToCheck
+     * @returns {boolean}
+     */
     function checkIfNumber(itemToCheck) {
-        if (Array.isArray(itemToCheck)) {
-            if (itemToCheck.some(isNaN) || itemToCheck.some(checkIfEmpty)) {
-                return false;
-            }
-        }
-
-        else if (Number(itemToCheck) == isNaN) {
-            return false;
-        }
-        return true;
+        return !isNaN(itemToCheck);
     }
 
     function displayFormError(idSelector, msg, isError){
@@ -409,14 +545,18 @@ phoneBook.displayManager = (function (){
         var errMsgElem = document.getElementById( idSelector + "Err" );
 
         if (isError) {
-            errMsgElem.classList.remove("inactive");
-            errMsgElem.classList.add("active");
-            errMsgElem.firstElementChild.innerHTML = msg ? msg : "error";
+            if (errMsgElem) {
+                errMsgElem.classList.remove("inactive");
+                errMsgElem.classList.add("active");
+                errMsgElem.firstElementChild.innerHTML = msg ? msg : "error";
+            }
             field.classList.add("inputError");
         }
         else {
-            errMsgElem.classList.remove("active");
-            errMsgElem.classList.add("inactive");
+            if (errMsgElem) {
+                errMsgElem.classList.remove("active");
+                errMsgElem.classList.add("inactive");
+            }
             field.classList.remove("inputError");
         }
     }

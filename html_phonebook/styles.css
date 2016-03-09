@@ -1,7 +1,7 @@
 body,html {
     margin: 0;
     padding: 0;
-    font-family: Arial;
+    font-family: "Arial";
 }
 
 html {
@@ -51,7 +51,7 @@ section {
     padding-right: 2%;
     padding-bottom: 20px;
     padding-left: 5%;
-    min-width: 491px;
+    min-width: 580px;
 }
     section div {
         padding-top: 10px;
@@ -66,13 +66,17 @@ section {
         text-decoration: underline;
     }
 
+    section nav #saveData {
+
+    }
+
     section #searchInput {
         width: 85%;
-        height: 30px;
+        height: 32px;
     }
 
     section input[type="button"] {
-        width: 11%;
+        width: 15%;
         cursor: pointer;
         background-color: #3951A5;
         padding: 7px;
@@ -81,7 +85,7 @@ section {
         font-weight: bold;
         -webkit-font-smoothing: antialiased;
         display: inline-block;
-        box-sizing: content-box;
+        box-sizing: border-box;
         border: 1px solid #3951A5;
     }
 
@@ -102,20 +106,44 @@ section {
 
     thead {
         font-weight: bold;
+        background-color: black;
+        color: white;
     }
 
     th, td {
         border-bottom: 1px solid #ddd;
         height: 25px;
+        padding-left: 5px;
     }
 
     section #NewContactForm p {
-        width: 350px;
+        /*width: 350px;*/
+        padding: 10px 0;
+    }
+
+    section #NewContactForm span {
+        float: left;
+        min-width: 180px;
     }
 
     section #NewContactForm input {
-        margin-left: 10px;
-        float: right;
+        /* margin-left: 10px; */
+        float: left;
+    }
+
+    section #NewContactForm input.phonesInput {
+        margin: 0 5px 10px 0;
+    }
+
+    section #NewContactForm #newContactBtn {
+        clear: both;
+    }
+    section #NewContactForm #addPhoneFieldBtn {
+        float: left;
+        padding: 3px 0 0 5px;
+        min-width: 20px;
+        font-size: 20px;
+        cursor: pointer;
     }
 
     section #allItemsTableBody {
@@ -123,10 +151,12 @@ section {
     }
 
     .groupStyle {
-        background-color: #EFEFEF;
+        background-color: black;
+        color: white;
     }
 
     .errorMsg {
+        clear: both;
         color: red;
     }
 
@@ -146,8 +176,8 @@ footer {
     left: 0;
 }
 
-/*------ helpers ------*/
 
+/* helpers */
 .active {
     display: block;
 }

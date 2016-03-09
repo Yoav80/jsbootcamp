@@ -1,54 +1,121 @@
-/**
- * Created by y_mil on 3/2/2016.
- */
+
 phoneBook = phoneBook || {};
 
 phoneBook.itemsManager = ( function(){
+    'use strict';
 
-    this.nextId = 0;
+    var nextId = 0;
+    var root = null;
+    var currentGroup = null;
+
+    var SAVE_DATA_SUCCESS_MSG = "phonebook was saved successfully! ";
+    var SAVE_DATA_ERROR_MSG = "ERROR saving data";
 
     return {
         initialise: initialise,
         changeCurrentGroup: changeCurrentGroup,
-        getCurrentGroupContacts:getCurrentGroupContacts,
-        findItemsByName:findItemsByName,
-        deleteItem:deleteItem,
-        addNewContact:addNewContact,
-        addNewGroup:addNewGroup,
-        getAllItems:getAllItems
+        getCurrentGroupContacts: getCurrentGroupContacts,
+        findItemsByName: findItemsByName,
+        deleteItem: deleteItem,
+        addNewContact: addNewContact,
+        addNewGroup: addNewGroup,
+        getAllItems: getAllItems,
+        save: saveData,
+        getDataObj:getDataObj,
+        getCurrentGroup:getCurrentGroup,
+        loadDefaults:loadDefaults
     };
 
+    /**
+     * the items manager start up function.
+     * set the phone book root object,
+     * either by reading JSON or creating an empty root
+     */
     function initialise(){
-        if (phoneBook.root === null) {
-            var args = {
-                name: "PhoneBook"
+        var jsonData = phoneBook.dataManager.readData();
+        if (jsonData) {
+            var dataObject = {
+                itemInDataIndex: 0,
+                data:jsonData
             };
-            phoneBook.root = phoneBook.currentGroup = createGroup(args);
+            root = currentGroup = createItemsFromJson(dataObject);
         }
-
-        initialData();
+        else {
+            console.error("Error loading data");
+            loadDefaults();
+        }
     }
 
+    /**
+     *
+     * @param dataObject - an object containing flat JSON objects,
+     *        and in index to keep count on the current object being read.
+     * @param parentGroup - pass null to start from top
+     * @returns {items} - an object containing all items - root
+     */
+    function createItemsFromJson(dataObject, parentGroup ){
+
+        var items = null;
+        var itemIndex = dataObject.itemInDataIndex++;
+        var dataItem = dataObject.data[itemIndex];
+        dataItem.parent = parentGroup;
+
+        if (dataItem.type == "Group") {
+            var group = createGroup(dataItem);
+
+            if (parentGroup == null) {
+                items = group;
+            }
+            else{
+                parentGroup.items.push(group);
+            }
+
+            if (dataItem.numOfChildes > 0) {
+                for (var subIndex = 0; subIndex < dataItem.numOfChildes; subIndex++) {
+                    createItemsFromJson(dataObject, group);
+                }
+            }
+        }
+        else if (dataItem.type == "Contact") {
+            dataItem.firstName = dataItem.name.split(" ")[0];
+            dataItem.lastName = dataItem.name.split(" ")[1];
+
+            var contact = createContact(dataItem);
+            parentGroup.items.push(contact);
+        }
+
+        return items;
+    }
+
+    /**
+     *
+     * @param group - the group to change to
+     */
     function changeCurrentGroup(group){
-
-        var currentGroup = phoneBook.currentGroup;
-
         if(!group) {
             return;
         }
 
-        if (group == ".." && currentGroup != phoneBook.root){
-            changeCurrentGroup(currentGroup.parent);
-            return;
+        if (group == ".." && currentGroup != root){
+            currentGroup = currentGroup.parent;
         }
-
-        phoneBook.currentGroup = group;
+        else {
+            currentGroup = group;
+        }
     }
 
+    /**
+     * A recursive search on all items by string
+     * @param searchStr - string to match
+     * @param item - the group object to run on
+     * @param matchesArr - for recursive purposes, the array that returns
+     * @returns {*|Array}
+     */
     function findItemsByName(searchStr, item, matchesArr){
-        if (!matchesArr) {
-            matchesArr = [];
-        }
+
+        matchesArr = matchesArr || [];
+        item = item || root;
+
         if (item.type == "Contact"){
             if (item.firstName == searchStr || item.lastName == searchStr){
                 matchesArr.push(item);
@@ -67,12 +134,38 @@ phoneBook.itemsManager = ( function(){
         return matchesArr;
     }
 
+    /**
+     *
+     * @param id
+     * @param item - the group object to run on, recursive
+     * @returns {*}
+     */
+    function findItemByID(id,item){
+        item = item || root;
+
+        if (item.id == id){
+            return item;
+        }
+        if (item.items) {
+            for (var itemIndex = 0 , length = item.items.length; itemIndex < length; itemIndex++) {
+                var subItem = findItemByID(id, item.items[itemIndex]);
+                if (subItem){
+                    return subItem;
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @returns {Array} of items of the current group
+     */
     function getCurrentGroupContacts(){
         var contactsArr = [];
-        var currentGroup = phoneBook.currentGroup.items;
+        var currentItems = currentGroup.items;
 
-        for(var index = 0; index < currentGroup.length; index++){
-            var item = currentGroup[index];
+        for(var index = 0; index < currentItems.length; index++){
+            var item = currentItems[index];
             if (item.type == "Contact") {
                 contactsArr.push(item);
             }
@@ -80,9 +173,20 @@ phoneBook.itemsManager = ( function(){
         return contactsArr;
     }
 
+    /**
+     * returns all the phone book items as an array
+     * @param item - the group object to run on
+     * @param itr - for recursive purposes to create a tree indent
+     * @param allItemsArr - for recursive purposes, the array that returns
+     * @returns {*|Array}
+     */
     function getAllItems(item, itr, allItemsArr){
-        if (!allItemsArr) {
-            allItemsArr = [];
+        allItemsArr = allItemsArr || [];
+        item = item || root;
+        itr = itr || 0;
+
+        if (!item) {
+            return allItemsArr;
         }
 
         var indent = "";
@@ -103,28 +207,15 @@ phoneBook.itemsManager = ( function(){
         return allItemsArr;
     }
 
-    function addItem(item) {
-        var currGroup = phoneBook.currentGroup;
-
-        if (item.type == "Contact"){
-            currGroup.items.push(item);
-            console.log(item.firstName + " " + item.lastName + " added");
-        }
-        else {
-            if (currGroup.items.length > 0 && currGroup.items.indexOf(item) != -1){
-                throw Error("Item with name " + item.name + " was already added to group: " + currGroup.name);
-            }
-            else{
-                currGroup.items.push(item);
-                phoneBook.currentGroup = item;
-            }
-        }
-    }
-
+    /**
+     * Delete an item by id
+     * @param id
+     */
     function deleteItem(id){
-        var item = findItemByID(id,phoneBook.root);
 
-        if (item == phoneBook.root){
+        var item = findItemByID(id);
+
+        if (item == root){
             alert("The root of phonebook cant be deleted");
             return;
         }
@@ -138,10 +229,13 @@ phoneBook.itemsManager = ( function(){
         }
         else{
             alert("No item with that id was found");
-            return;
+            return false;
         }
 
         if (isSure){
+            if (item == currentGroup) {
+                currentGroup = item.parent;
+            }
             var parentArr = item.parent.items;
             if (parentArr) {
                 var indexToRemove = parentArr.indexOf(item);
@@ -150,57 +244,150 @@ phoneBook.itemsManager = ( function(){
                 }
             }
         }
+
+        saveData();
+        return true;
     }
 
-    function findItemByID(id,item){
-        if (item.id == id){
-            return item;
+    /**
+     * Adds an item to the current group
+     * @param item
+     */
+    function addItem(item) {
+        if (item.type == "Contact"){
+            currentGroup.items.push(item);
         }
-        if (item.items) {
-            for (var itemIndex = 0 , length = item.items.length; itemIndex < length; itemIndex++) {
-                var subItem = findItemByID(id, item.items[itemIndex]);
-                if (subItem){
-                    return subItem;
-                }
+        else {
+            if (currentGroup.items.length > 0 && currentGroup.items.indexOf(item) != -1){
+                alert("Item with name " + item.name + " was already added to group: " + currentGroup.name);
+                console.error("Item with name " + item.name + " was already added to group: " + currentGroup.name);
+            }
+            else{
+                currentGroup.items.push(item);
+                currentGroup = item;
             }
         }
+
+        saveData();
     }
 
+    /**
+     *
+     * @param args - object with all contact properties
+     */
     function addNewContact(args){
         var contact = createContact(args);
         addItem(contact);
     }
 
-    function addNewGroup(args){
-        var contact = createGroup(args);
-        addItem(contact);
-    }
-
+    /**
+     *
+     * @param args - object with all contact properties
+     * @returns {object}  - contact
+     */
     function createContact(args) {
         return {
             id: args.id ? args.id : generateNextId(),
             firstName: args.firstName ? args.firstName : "",
             lastName: args.lastName ? args.lastName : "",
             phoneNumbers: args.phoneNumbers ? args.phoneNumbers : [],
-            parent: args.parent ? args.parent : phoneBook.currentGroup,
+            parent: args.parent ? args.parent : currentGroup,
             type:"Contact"
         };
     }
 
+    /**
+     *
+     * @param args - object with all group properties
+     */
+    function addNewGroup(args){
+        var contact = createGroup(args);
+        addItem(contact);
+    }
+
+    /**
+     *
+     * @param args - object with all group properties
+     * @returns {object}  - group
+     */
     function createGroup(args) {
+        var id = args.id != undefined ? args.id : generateNextId();
         return {
-            id: args.id ? args.id : generateNextId(),
+            id: id,
             name: args.name ? args.name : "",
             items: args.items ? args.items : [],
             type: "Group",
-            parent: args.parent ? args.parent : phoneBook.currentGroup
+            parent: args.parent ? args.parent : currentGroup
         };
     }
 
+    /*
+     *   helpers
+     */
+
+    /**
+     * @returns {number}
+     */
     function generateNextId(){
-        return this.nextId++;
+
+        var allItemsArr = getAllItems();
+        allItemsArr.sort(function(a, b){
+            return a.item.id > b.item.id;
+        });
+
+        if (allItemsArr.length) {
+            nextId = allItemsArr[allItemsArr.length - 1].item.id + 1;
+        }
+
+        return nextId++;
     }
 
+    /**
+     * call data manager to save
+      */
+    function saveData(){
+        var writeSuccess = phoneBook.dataManager.writeData(root);
+        if (writeSuccess) {
+            console.log(SAVE_DATA_SUCCESS_MSG);
+        }
+        else {
+            console.log(SAVE_DATA_ERROR_MSG);
+        }
+    }
+
+    /**
+     * getter - root
+     * @returns {object}
+     */
+    function getDataObj(){
+        return root;
+    }
+
+    /**
+     * getter - current group
+     * @returns {object}
+      */
+    function getCurrentGroup(){
+        return currentGroup;
+    }
+
+    /**
+     * loads a ready to use tree in case there's no JSON or when reset to "default" is pressed
+     */
+    function loadDefaults() {
+        var args = {
+            name: "PhoneBook"
+        };
+
+        nextId = 0;
+        root = currentGroup = null;
+        root = currentGroup = createGroup(args);
+        initialData();
+    }
+
+    /**
+     * loads ready to use tree items for debug
+     */
     function initialData() {
 
         // ---- test data ---- //
@@ -227,7 +414,7 @@ phoneBook.itemsManager = ( function(){
 
         // -----------end--------------//
 
-        changeCurrentGroup(phoneBook.root);
+        changeCurrentGroup(root);
     }
 
 })();
