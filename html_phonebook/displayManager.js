@@ -136,6 +136,7 @@ phoneBook.displayManager = (function (){
         }
 
         makeDivActive(view);
+        createSideMenu();
         updateCurrentGroup();
         if (currentView != view && currentView != undefined) {
             clearView(currentView);
