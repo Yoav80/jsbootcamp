@@ -1,0 +1,156 @@
+button.back-fab {
+    margin-left:15px;
+    margin-right: 15px;
+}
+
+button.editBtn {
+    margin-left: 100px;
+    position: absolute;
+    right: 0;
+    top: 35px;
+}
+
+.listViewHeader{
+    display: flex;
+    background-color: #FF5252;
+}
+
+.mdl-grid {
+    display: none;
+}
+
+.mdl-cell {
+    position: relative;
+}
+
+    input.GroupTitle.editable, input.ContactTitle.editable {
+        border-bottom: thin solid #cccccc;
+    }
+
+    input.GroupTitle:focus , input.ContactTitle:focus {
+        outline: none;
+        border-bottom: thin solid #3D3D3D;
+    }
+
+    input.GroupTitle , input.ContactTitle{
+        border-bottom: 1px solid rgba(0,0,0,.12);
+        flex-grow: 1;
+        background-color: #FF5252;
+        color: white;
+        margin: 35px 15px;
+        font-size: 45px;
+        max-width: 350px;
+    }
+
+
+    .mdl-speed-dial {
+        top: 37px;
+        right: 15px;
+    }
+
+    .mdl-speed-dial .mdl-button {
+        background: #536DFE;
+        color: white;
+    }
+
+    li.mdl-list__item {
+        padding: 10px;
+
+        -webkit-transition-duration: .28s;
+        transition-duration: .28s;
+        -webkit-transition-timing-function: cubic-bezier(.4,0,.2,1);
+        transition-timing-function: cubic-bezier(.4,0,.2,1);
+        -webkit-transition-property: background-color;
+        transition-property: background-color;
+    }
+
+    li.mdl-list__item:hover {
+        background-color: #F4F4F4;
+    }
+
+    .material-icons.person , .mdl-speed-dial .mdl-button.person{
+        background-color: #4caf50;
+    }
+
+    .material-icons.group , .mdl-speed-dial .mdl-button.group{
+        background-color: #424242;
+    }
+
+    .mdl-card {
+        width: 100%;
+    }
+
+        .mdl-card__title {
+            display: flex;
+            background-color: #FF5252;
+            padding: 0;
+        }
+        .mdl-card__title h2 {
+            font-weight: inherit;
+            font-size: 35px;
+        }
+
+        .mdl-card__actions {
+            padding: 16px;
+        }
+
+        .mdl-card__supporting-text .mdl-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .mdl-list__item-secondary-action {
+            padding: 10px;
+            vertical-align: top;
+            text-decoration: none;
+        }
+
+        input.phoneNumber.mdl-list__item-secondary-action {
+            background: none;
+            font-size: 20px;
+            border: none;
+            max-width: 130px;
+            padding: 0 5px 0 0;
+            border-bottom: thin solid rgba(0,0,0,.12);
+            color: gray;
+        }
+
+        input.phoneNumber.mdl-list__item-secondary-action:focus {
+            outline: none;
+            border-bottom: thin solid #ADADAD;
+        }
+
+        .mdl-card__supporting-text{
+            display: flex;
+            align-items: baseline;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+
+/*
+
+    HELPERS
+
+*/
+
+input.uneditable {
+    border-bottom: none;
+}
+
+.clickable {
+    cursor: pointer;
+    /*text-decoration: none;*/
+}
+
+.clickable:hover {
+    /*text-decoration: underline;*/
+}
+
+.active {
+    display: flex;
+}
+
+.inactive {
+    display: none;
+}

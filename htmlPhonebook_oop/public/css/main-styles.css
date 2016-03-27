@@ -1,0 +1,219 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Arial";
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin: 0 0 120px;
+}
+
+header {
+    min-height: 80px;
+    border-bottom: 5px solid lightgray;
+    padding: 20px 5%;
+    /*width: 100%;*/
+    background-color: black;
+    color: white;
+    margin-bottom: 20px;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px 5%;
+}
+
+    nav a {
+        padding-right: 20px;
+        text-decoration: underline;
+        display: flex;
+    }
+
+    nav #searchInput {
+        height: 32px;
+    }
+
+    nav input[type="button"] {
+        cursor: pointer;
+        background-color: #3951A5;
+        padding: 7px;
+        color: white;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+        font-weight: bold;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        box-sizing: border-box;
+        border: 1px solid #3951A5;
+    }
+
+    nav input[type="button"]:hover {
+        border: 1px solid black;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+    }
+
+    nav input[type="text"] {
+        box-sizing: border-box;
+        height: 25px;
+        padding-left: 5px;
+        flex-grow: 1;
+    }
+
+section#viewWrapper {
+    align-items: center;
+    margin: 20px 5%;
+    min-height: 400px;
+    border: 1px solid;
+    padding: 50px;
+    box-sizing: content-box;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+    #viewWrapper input[type="button"] {
+        display: flex;
+        justify-content: flex-end;
+        order: -1;
+    }
+
+    #viewTitle {
+        display: flex;
+        flex: 0 0 100%;
+    }
+
+    #listView ul {
+        padding: 10px 0 0 5px;
+    }
+
+    #listView ul li {
+        list-style-type: none;
+        empty-cells: show;
+        padding: 5px;
+        display: flex;
+    }
+
+    #listView ul li.current {
+        font-weight: bold;
+    }
+
+    #listView ul li a.nameLink {
+        flex-grow: 1;
+    }
+
+/*section {*/
+    /*min-height: 400px;*/
+    /*width: 63%;*/
+    /*float: left;*/
+    /*padding-right: 2%;*/
+    /*padding-bottom: 20px;*/
+    /*padding-left: 5%;*/
+    /*min-width: 580px;*/
+/*}*/
+
+/*section div {*/
+    /*padding-top: 10px;*/
+/*}*/
+
+/*table {*/
+    /*width: 100%;*/
+/*}*/
+
+/*thead {*/
+    /*font-weight: bold;*/
+    /*background-color: black;*/
+    /*color: white;*/
+/*}*/
+
+/*th, td {*/
+    /*border-bottom: 1px solid #ddd;*/
+    /*height: 25px;*/
+    /*padding-left: 5px;*/
+/*}*/
+
+/*section #NewContactForm p {*/
+    /*!*width: 350px;*!*/
+    /*padding: 10px 0;*/
+/*}*/
+
+/*section #NewContactForm span {*/
+    /*float: left;*/
+    /*min-width: 180px;*/
+/*}*/
+
+/*section #NewContactForm input {*/
+    /*!* margin-left: 10px; *!*/
+    /*float: left;*/
+/*}*/
+
+/*section #NewContactForm input.phonesInput {*/
+    /*margin: 0 5px 10px 0;*/
+/*}*/
+
+/*section #NewContactForm #newContactBtn {*/
+    /*clear: both;*/
+/*}*/
+
+/*section #NewContactForm #addPhoneFieldBtn {*/
+    /*float: left;*/
+    /*padding: 3px 0 0 5px;*/
+    /*min-width: 20px;*/
+    /*font-size: 20px;*/
+    /*cursor: pointer;*/
+/*}*/
+
+/*section #allItemsTableBody {*/
+    /*white-space: pre;*/
+/*}*/
+
+.groupStyle {
+    background-color: black;
+    color: white;
+}
+
+.errorMsg {
+    clear: both;
+    color: red;
+}
+
+.inputError {
+    border: 1px solid red;
+}
+
+footer {
+    clear: both;
+    height: 80px;
+    border-top: 1px solid lightgray;
+    padding: 20px 5%;
+    width: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+/* helpers */
+.active {
+    display: block;
+}
+
+.inactive {
+    display: none;
+}
+
+.clickable {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.clickable:hover {
+    text-decoration: underline;
+}
