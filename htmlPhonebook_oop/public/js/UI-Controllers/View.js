@@ -4,8 +4,6 @@ app.ViewControllerClass = (function (app) {
 
     var _app = app;
     var BACK_BUTTON_ELEMENT_ID = ".backBtn";
-    var EDIT_BUTTON_ELEMENT_ID = ".editBtn";
-    var ADD_BUTTON_ELEMENT_ID = ".addBtn";
 
     function View( viewData ) {
 
@@ -13,21 +11,7 @@ app.ViewControllerClass = (function (app) {
         this.titleElement = viewData.titleElement;
         this.templateElement = viewData.templateElement;
         this.itemTemplate = null;
-
         this.backBtn = this.container.find(BACK_BUTTON_ELEMENT_ID);
-        if (this.backBtn) {
-            this.backBtn.click(this.handleBack.bind(this));
-        }
-
-        this.editBtn = this.container.find(EDIT_BUTTON_ELEMENT_ID);
-        if (this.editBtn) {
-            this.editBtn.click(this.editClickHandler.bind( this ));
-        }
-
-        this.addBtn = this.container.find(ADD_BUTTON_ELEMENT_ID);
-        if (this.addBtn) {
-            this.addBtn.click(this.editClickHandler.bind( this ));
-        }
 
         this.loadTemplate();
         this.setData(viewData.dataSet);
@@ -49,7 +33,7 @@ app.ViewControllerClass = (function (app) {
 
     View.prototype.loadTemplate = function() {
 
-        var templateElement = _app.DomHelpers.getElement(this.container , this.templateElement)
+        var templateElement = _app.DomHelpers.getElement(this.container , this.templateElement);
 
         this.listContainer = $(templateElement).parent();
         this.itemTemplate = templateElement.outerHtml();
@@ -61,14 +45,42 @@ app.ViewControllerClass = (function (app) {
 
         if (this.parent) {
             this.setData(this.parent);
-            this.editModeOff();
         }
     }
 
-    View.prototype.editModeOff = function () {
-        this.titleElement.attr("disabled" , true);
-        this.titleElement.removeClass("editable");
-        this.titleElement.unbind();
+    View.prototype.setEditMode = function () {
+
+        if (this.backBtn) {
+            this.backBtn.unbind();
+            this.backBtn.click(this.handleBack.bind(this));
+        }
+
+        if (this.parent) {
+            this.backBtn.attr("disabled", false);
+            this.titleElement.removeClass("uneditable")
+                .removeAttr("disabled")
+                .unbind()
+                .blur(this.save.bind(this));
+
+            var me = this;
+            this.titleElement.keyup(function(e){
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    me.save.bind(this , e);
+                }
+            });
+        }
+        else {
+            this.backBtn.attr("disabled", true);
+            this.titleElement.removeClass("editable")
+                .addClass("uneditable")
+                .attr("disabled" , true)
+                .unbind();
+        }
+    }
+
+    View.prototype.save = function () {
+
     }
 
     View.prototype.updateDOM = function () {

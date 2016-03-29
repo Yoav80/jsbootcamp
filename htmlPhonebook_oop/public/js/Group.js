@@ -4,23 +4,38 @@ app.Group = (function (app) {
 
     var _app = app;
 
+
+    /**
+     * @constructor function for creation of a group object
+     *              inherits from the BookItem class
+     *
+     * @param args - name as string
+     *             - parent as Group or null for the root
+     *             - id as int if loaded from db
+     *
+     */
     function Group(args) {
 
         _app.BookItem.call(this, args.id, args.name);
         this.parent = args.parent;
         this.items = [];
     }
-
     Group.prototype = Object.create(_app.BookItem.prototype);
-    //_app.DomHelpers.inherit(Group, _app.BookItem);
 
+
+    /**
+     * A function that adds an item to the items array
+     * (cannot add duplicate items)
+     *
+     * @param item - object, instance of Group or Contact
+     *
+     */
     Group.prototype.addItem = function (item) {
 
         if (item instanceof _app.Contact || item instanceof _app.Group) {
             if (this.items.indexOf(item) != -1) {
-
-                alert("Item with name " + item.name + " was already added to group: " + this.name);
-                console.error("Item with name " + item.name + " was already added to group: " + this.name);
+                console.error("duplicate item: " + item.name + " in group: " + this.name);
+                throw new Error("duplicate item cannot be added to a group");
             }
             else {
                 console.log("adding: " + item.getName());
@@ -31,7 +46,15 @@ app.Group = (function (app) {
         EventBus.dispatch("dataChanged", this);
     };
 
-    Group.prototype.addJsonTree = function (dataObject , append) {
+
+    /**
+     * A function that converts json objects to Groups and contacts
+     *
+     * @param dataObject - data as JSON data of groups and contacts
+     *                   - itemInDataIndex as int, for keeping track of the current json object being read
+     *
+     */
+    Group.prototype.addJsonTree = function (dataObject) {
         var itemIndex = dataObject.itemInDataIndex++;
         var dataItem = dataObject.data[itemIndex];
         dataItem.parent = this;
@@ -47,7 +70,7 @@ app.Group = (function (app) {
         else if (dataItem.type == "Group") {
             var group;
 
-            if (dataItem.id == 0 || dataItem.name == "PhoneBook") {
+            if (dataItem.id == 0 || itemIndex == 0) {
                 group = this;
             }
             else {
@@ -61,16 +84,16 @@ app.Group = (function (app) {
                 }
             }
         }
-        EventBus.dispatch("dataChanged", this);
     };
 
-    Group.prototype.destroy = function (id) {
-        var arr = this.parent.items;
-        var ind = arr.indexOf(this);
-        arr.splice(ind, 1);
-        EventBus.dispatch("dataChanged", this);
-    }
 
+    /**
+     * A function that searches for a string match in all items and subItems
+     *
+     * @param searchStr  String to match
+     * @param matchesArr Array for recursive reasons
+     * @returns {*|Array}
+     */
     Group.prototype.getItemsByName = function (searchStr, matchesArr) {
 
         matchesArr = matchesArr || [];
@@ -95,6 +118,12 @@ app.Group = (function (app) {
         return matchesArr;
     }
 
+
+    /**
+     * recursive search for a matched id
+     * @param id
+     * @returns {*|object}
+     */
     Group.prototype.getItemById = function (id) {
         if (this.id == id){
             return this;
@@ -111,6 +140,26 @@ app.Group = (function (app) {
                     if (subGroup && subGroup.id == id){
                         return subGroup;
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * A search for an exact match on a name of a group
+     * @param name
+     * @returns {*| object}
+     */
+    Group.prototype.findGroupByExactName = function (name) {
+        if (this.name == name){
+            return this;
+        }
+         else if (this.items.length) {
+            for (var itemIndex = 0 , length = this.items.length; itemIndex < length; itemIndex++) {
+
+                var subItem = this.items[itemIndex];
+                if (subItem.items && subItem.name == name) {
+                    return subItem;
                 }
             }
         }

@@ -14,13 +14,16 @@
         <link rel="stylesheet" href="./css/mdl-speed-dial.css"/>
         <link rel="stylesheet" href="./css/styles.css"/>
         <link rel="stylesheet" href="./css/myStyles.css"/>
+
+        <link rel="stylesheet" type="text/css" href="./lib/dialog-polyfill.css" />
     </head>
 
     <body>
 
-        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
-            <!-- App Header ( links, search, drawer ) -->
+
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+            <!-- App Header ( links, search ) -->
             <header class="mdl-layout__header" id="phoneBook-navigation">
                 <div class="mdl-layout__header-row">
                     <!-- Title -->
@@ -30,31 +33,27 @@
                     <!-- Navigation. We hide it in small screens. -->
                     <nav class="mdl-navigation mdl-layout--large-screen-only">
                         <a id="resetData" class="mdl-navigation__link" href="javascript:void(0)">reset to default</a>
-                        <a id="addContact" class="mdl-navigation__link" href="javascript:void(0)">add contact</a>
-                        <a id="addGroup" class="mdl-navigation__link" href="javascript:void(0)">add group</a>
                     </nav>
 
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-                        <label class="mdl-button mdl-js-button mdl-button--icon" for="site-search">
+                        <label class="mdl-button mdl-js-button mdl-button--icon site-search-button" for="site-search">
                             <i class="material-icons">search</i>
                         </label>
                         <div class="mdl-textfield__expandable-holder">
-                            <input class="mdl-textfield__input" type="search" id="site-search" />
+                            <input class="mdl-textfield__input site-search-input" type="search" id="site-search" />
                             <label class="mdl-textfield__label" for="site-search">Search</label>
                         </div>
                     </div>
 
                 </div>
             </header>
+            <!-- App Drawer ( links, search ) -->
             <div class="mdl-layout__drawer" id="phoneBook-navigation-drawer">
                 <span class="mdl-layout-title">{ PHONEBOOK }</span>
                 <nav class="mdl-navigation">
                     <a id="resetData-drawer" class="mdl-navigation__link" href="javascript:void(0)">reset to default</a>
-                    <a id="addContact-drawer" class="mdl-navigation__link" href="javascript:void(0)">add contact</a>
-                    <a id="addGroup-drawer" class="mdl-navigation__link" href="javascript:void(0)">add group</a>
                 </nav>
             </div>
-
             <!-- Content Area -->
             <main class="mdl-layout__content">
 
@@ -70,10 +69,6 @@
                             </button>
 
                             <input type="text" class="mdl-textfield__input GroupTitle" disabled>
-
-                            <!--button class="editBtn back-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                                <i class="material-icons">edit</i>
-                            </button-->
 
                             <!-- add button - multi state -->
                             <div class="mdl-speed-dial">
@@ -98,8 +93,6 @@
 
                                 </div>
                             </div>
-
-                            <!--h2 id="GroupTitle">Current group</h2-->
                         </div>
 
                         <ul class="demo-list-action mdl-list">
@@ -108,7 +101,7 @@
                             <li id="GroupTemplate" class="mdl-list__item">
                                 <span class="mdl-list__item-primary-content item">
                                     <i class="material-icons mdl-list__item-avatar iconHolder">person</i>
-                                    <span class="mdl-list__item-secondary-action itemName">Bryan Cranston</span>
+                                    <input type="text" disabled class="mdl-list__item-secondary-action itemName">
                                 </span>
                                 <a class="mdl-list__item-secondary-action deleteButton" href="javascript:void(0)">
                                     <i class="material-icons">delete</i>
@@ -135,10 +128,6 @@
                                     <i class="material-icons">arrow_back</i>
                                 </button>
                                 <input class="mdl-textfield__input ContactTitle">
-
-                                <!--button class="editBtn back-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                                    <i class="material-icons">edit</i>
-                                </button-->
 
                             </div>
 
@@ -172,14 +161,24 @@
 
 
             </main>
-
         </div>
 
+        <dialog class="mdl-dialog" id="dialog">
+            <h4 class="mdl-dialog__title">Allow data collection?</h4>
+            <div class="mdl-dialog__content">
+                <p></p>
+            </div>
+            <div class="mdl-dialog__actions--full-width">
+                <button type="button" class="mdl-button ok">ok</button>
+                <button type="button" class="mdl-button cancel">cancel</button>
+            </div>
+        </dialog>
 
         <script src="./lib/material.min.js"></script>
         <script src="./lib/jquery-2.2.1.min.js"></script>
         <script src="./lib/mdl-speed-dial.js"></script>
         <script src="./lib/jQueryExtensions.js"></script>
+        <script src="./lib/dialog-polyfill.js"></script>
         <script src="./lib/DomHelpers.js"></script>
         <script src="./lib/eventBus.js"></script>
 

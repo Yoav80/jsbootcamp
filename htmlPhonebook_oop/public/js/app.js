@@ -29,7 +29,6 @@ var app = app || {};
     setHandlers();
     app.ContactViewCtrl.hideMe();
     app.GroupViewCtrl.showMe();
-    //changeView(app.phoneBook.root);
 
 }));
 
@@ -40,9 +39,8 @@ function setHandlers() {
 }
 
 function changeView (scope, viewData, isNew, parent) {
-
-
     console.log("changeView!!" , viewData, isNew, parent);
+
     if (viewData.items) {
 
         app.GroupViewCtrl.setData( viewData, isNew, parent);
@@ -58,6 +56,4 @@ function changeView (scope, viewData, isNew, parent) {
         app.ContactViewCtrl.showMe();
     }
 }
-
-
 

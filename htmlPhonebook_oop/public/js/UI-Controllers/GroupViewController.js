@@ -4,14 +4,24 @@ app.GroupViewControllerClass = (function (app) {
 
     var _app = app;
 
+    var ANIMATION_DURATION = 250;
+    var ADD_CONTACT_ELEMENT_CLASS = ".mdl-button.person";
+    var ADD_GROUP_ELEMENT_CLASS = ".mdl-button.group";
+    var ADD_BUTTON_ELEMENT_CLASS = ".mdl-speed-dial__main-fab";
+    var TEMPLATE_ICON_HOLDER_CLASS = ".iconHolder";
+    var TEMPLATE_DELETE_BUTTON_CLASS = ".deleteButton";
+    var TEMPLATE_ITEM_NAME_CLASS = ".itemName";
+
+    var DUPLICATE_GROUP_NAME_ERROR = "A group with that name already exists";
+
     function GroupViewController(viewData) {
 
+        this.addBtn = viewData.container.find(ADD_BUTTON_ELEMENT_CLASS);
+        this.addContactBtn = viewData.container.find(ADD_CONTACT_ELEMENT_CLASS);
+        this.addGroupBtn = viewData.container.find(ADD_GROUP_ELEMENT_CLASS);
+
         _app.ViewControllerClass.call(this, viewData);
-
-        this.addContactBtn = this.container.find(".mdl-button.person");
-        this.addContactBtn.click(this.addContactBtnHandler.bind(this));
     }
-
     GroupViewController.prototype = Object.create(_app.ViewControllerClass.prototype);
 
     GroupViewController.prototype.updateDOM = function() {
@@ -24,6 +34,8 @@ app.GroupViewControllerClass = (function (app) {
         var arr = this.dataSet.items;
         var listContainer = this.listContainer.empty();
 
+        this.titleElement.val(this.dataSet.name);
+
         if (arr.length < 1) {
             var div = $(me.itemTemplate)
                 .attr('id', "noResults")
@@ -31,109 +43,165 @@ app.GroupViewControllerClass = (function (app) {
                 .appendTo(this.listContainer);
         }
         else {
-            arr.forEach(function(item, index) {
-                var div = $(me.itemTemplate);
-                var iconType = item.items ? "group" : "person" ;
-
-                var ico = div.find(".iconHolder")
-                ico.text(iconType).addClass(iconType);
-
-                div.find(".item")
-                    .click(me.directoryClickHandler.bind( me , item, index ))
-                    .addClass("clickable");
-
-                div.find(".itemName").text(item.name)
-                    .addClass("clickable")
-
-                div.find(".deleteButton")
-                    .click(me.directoryDeleteClickHandler.bind( me , item, index ))
-                    .addClass("clickable")
-
-                listContainer.append(div);
+            arr.sort(_app.DomHelpers.compareObjectsByName);
+            arr.forEach(function(item , index){
+                me.addListItem(item, false);
             });
         }
 
-        this.titleElement.val(this.dataSet.name);
-        this.titleElement.unbind();
+        this.setEditMode();
+    }
 
-        if (!this.parent) {
+    GroupViewController.prototype.addListItem = function (item, isNew) {
 
-            this.backBtn.attr("disabled" , true);
-            this.titleElement.attr("disabled" , true)
-                .addClass("uneditable")
-                .unbind();
+        var div = $(this.itemTemplate);
+        div.hide();
+
+        var iconType = item.items ? "group" : "person" ;
+        div.find(TEMPLATE_ICON_HOLDER_CLASS)
+            .text(iconType)
+            .addClass(iconType);
+
+
+        if (isNew) {
+            div.addClass("newItem");
+            div.find(TEMPLATE_DELETE_BUTTON_CLASS).remove();
+
+            var itemName = div.find(TEMPLATE_ITEM_NAME_CLASS);
+            itemName.removeAttr("disabled")
+                .addClass("newItem")
+                .blur(this.save.bind(this))
+                .attr("id" , "item" + item.id)
+
+            this.listContainer.prepend(div);
+            //setTimeout(setFocus, 250, itemName);
+            setTimeout(function(item) {
+                return function() {
+                    item.focus();
+                };
+            }(itemName), ANIMATION_DURATION);
         }
         else {
+            div.find(".item")
+                .click(this.directoryClickHandler.bind( this , item ))
+                .addClass("clickable");
 
-            this.backBtn.removeAttr("disabled");
-            this.titleElement.removeClass("uneditable")
-                .removeAttr("disabled")
-                .blur(this.saveEdit.bind(this));
+            div.find(".itemName").val(item.name)
+                .addClass("clickable");
+
+            div.find(".deleteButton")
+                .click(this.directoryDeleteClickHandler.bind( this , item ))
+                .addClass("clickable");
+
+            this.listContainer.append(div);
         }
 
-        if (this.isSearch && this.addContactBtn) {
-            this.addContactBtn.attr("disabled" , true);
-            this.editModeOff();
+        div.fadeIn(ANIMATION_DURATION);
+    }
+
+    GroupViewController.prototype.setEditMode = function () {
+
+        _app.ViewControllerClass.prototype.setEditMode.call(this);
+
+        if (!this.isSearch && this.addBtn) {
+            this.addBtn.removeAttr("disabled");
         }
-        else if (this.addContactBtn) {
-            this.addContactBtn.removeAttr("disabled");
+        else if (this.addBtn) {
+            this.addBtn.attr("disabled", true);
+        }
+
+        if (this.addContactBtn) {
+            this.addContactBtn.unbind()
+                .click(this.addContactBtnHandler.bind(this));
+        }
+
+        if (this.addGroupBtn) {
+            this.addGroupBtn.unbind()
+                .click(this.addGroupBtnHandler.bind(this));
         }
     }
 
-    //GroupViewController.prototype.editClickHandler = function () {
-    //    this.titleElement.attr('disabled' , false);
-    //    this.titleElement.addClass("editable");
-    //    this.titleElement.focus();
-    //
-    //    this.editBtn.attr("disabled" , true);
-    //
-    //    this.titleElement.blur(this.saveEdit.bind(this));
-    //}
+    GroupViewController.prototype.save = function (event) {
 
-    GroupViewController.prototype.saveEdit = function () {
+        var currentField = $(event.currentTarget);
 
-        var titleChange = this.titleElement.val();
+        if (currentField.hasClass("newItem")) {
 
-        if (titleChange && titleChange != this.dataSet.name) {
+            var id = Number(currentField.attr("id").replace(/item/, ''));
+            var val = currentField.val();
 
-            //var confirmed = confirm("save changes for? " + titleChange);
-            //if (confirmed) {
+            if (!val) {
+                var newItem = $("li.newItem");
+                newItem.fadeOut(ANIMATION_DURATION, function () {
+                        $(this).remove();
+                    });
+
+                return;
+            }
+            if (!this.dataSet.findGroupByExactName(val)) {
+
+                var args = {};
+                args.parent = this.dataSet;
+                args.name = val;
+                var group = new _app.Group(args);
+
+                this.dataSet.addItem(group);
+                EventBus.dispatch("dataChanged", this);
+                this.updateDOM();
+            }
+            else {
+
+                var errMsg = DUPLICATE_GROUP_NAME_ERROR;
+                var errSpan = this.listContainer.find(".error");
+                if (!errSpan) {
+                    errSpan = $('<span class="error"></span>');
+                }
+                errSpan.text(errMsg);
+                errSpan.insertAfter(currentField);
+
+                currentField.focus();
+            }
+        }
+        else if (currentField == this.titleElement ) {
+
+            if (currentField.val() != this.dataSet.name) {
                 this.dataSet.name = titleChange
                 EventBus.dispatch("dataChanged", this);
-            //}
+            }
         }
-        //else {
-        //    if (!titleChange) {
-        //        this.updateDOM();
-        //    }
-        //}
     }
 
-    GroupViewController.prototype.directoryClickHandler = function(item) {
-        //if (!item) return;
 
-        this.editModeOff();
+    // HANDLERS //
+
+    GroupViewController.prototype.directoryClickHandler = function(item) {
+        if (!item) return;
 
         if (item.items) {
             this.setData(item, false, this.dataSet);
         }
         else {
-            //todo contact click
             EventBus.dispatch("changeView", this, item, false, this.dataSet);
         }
     }
 
-    GroupViewController.prototype.directoryDeleteClickHandler = function(item, index) {
+    GroupViewController.prototype.directoryDeleteClickHandler = function(item) {
         if (!item) return;
 
-        item.destroy();
+        var me = this;
 
-        var currentArr = this.dataSet.items;
-        if (currentArr[index] === item) {
-            currentArr.splice(index, 1);
-        }
-
-        this.updateDOM();
+        _app.DomHelpers.setModal("DELETE", "Are you sure you want to delete " +
+            item.name + " ?")
+            .then(function() {
+                item.remove();
+                var currentArr = me.dataSet.items;
+                var ind = currentArr.indexOf(item);
+                if (ind > -1 ){
+                    currentArr.splice(ind, 1);
+                }
+                me.updateDOM();
+            })
+            .fail(function() { console.log('cancel'); })
     }
 
     GroupViewController.prototype.addContactBtnHandler = function () {
@@ -142,16 +210,24 @@ app.GroupViewControllerClass = (function (app) {
             return;
         }
 
-        this.editModeOff();
-
         var args = {};
         args.parent = this.dataSet;
         var contact = new _app.Contact(args);
 
-        /**
-         * item, isNew
-         */
         EventBus.dispatch("changeView", this, contact, true);
+    }
+
+    GroupViewController.prototype.addGroupBtnHandler = function () {
+
+        if (this.isSearch) {
+            return;
+        }
+
+        var args = {};
+        args.parent = this.dataSet;
+        args.items = [];
+
+        this.addListItem(args, true);
     }
 
     return GroupViewController;

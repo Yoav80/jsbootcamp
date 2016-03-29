@@ -48,10 +48,20 @@ button.editBtn {
         right: 15px;
     }
 
-    .mdl-speed-dial .mdl-button {
-        background: #536DFE;
-        color: white;
-    }
+        .mdl-speed-dial__option {
+            margin: 16px 0 2px;
+        }
+
+        .mdl-button--fab.mdl-button--mini-fab {
+            height: 56px;
+            min-width: 56px;
+            width: 56px;
+        }
+
+        .mdl-speed-dial .mdl-button {
+            background: #536DFE;
+            color: white;
+        }
 
     li.mdl-list__item {
         padding: 10px;
@@ -97,6 +107,7 @@ button.editBtn {
         .mdl-card__supporting-text .mdl-list {
             display: flex;
             flex-wrap: wrap;
+            flex-grow: 1;
         }
 
         .mdl-list__item-secondary-action {
@@ -105,19 +116,23 @@ button.editBtn {
             text-decoration: none;
         }
 
-        input.phoneNumber.mdl-list__item-secondary-action {
+        input.mdl-list__item-secondary-action {
             background: none;
-            font-size: 20px;
+            font-size: 18px;
             border: none;
-            max-width: 130px;
+            /*max-width: 130px;*/
             padding: 0 5px 0 0;
             border-bottom: thin solid rgba(0,0,0,.12);
             color: gray;
         }
 
-        input.phoneNumber.mdl-list__item-secondary-action:focus {
+        input.mdl-list__item-secondary-action:focus {
             outline: none;
             border-bottom: thin solid #ADADAD;
+        }
+
+        input.mdl-list__item-secondary-action:disabled {
+            border: none;
         }
 
         .mdl-card__supporting-text{
@@ -127,11 +142,25 @@ button.editBtn {
             box-sizing: border-box;
         }
 
+#dialog.mdl-dialog {
+    top: 100px;
+}
+
+#dialog .mdl-dialog__actions--full-width {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#dialog button.mdl-button {
+    flex: 0 0 50%;
+    text-align: center;
+}
+
+
 
 /*
-
     HELPERS
-
 */
 
 input.uneditable {

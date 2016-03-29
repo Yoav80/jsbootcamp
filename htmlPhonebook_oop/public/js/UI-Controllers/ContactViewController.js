@@ -13,10 +13,8 @@ app.ContactViewControllerClass = (function (app) {
         _app.ViewControllerClass.call(this, viewData);
 
         this.delBtn = this.container.find(DELETE_BUTTON_ELEMENT_ID);
-        this.delBtn.click(this.DeleteContactClickHandler.bind( this ));
-
         this.addPhoneBtn = this.container.find(ADD_PHONE_BUTTON_ELEMENT_ID);
-        this.addPhoneBtn.click(this.addPhoneClickHandler.bind( this ));
+
     }
     ContactViewController.prototype = Object.create(_app.ViewControllerClass.prototype);
 
@@ -33,26 +31,40 @@ app.ContactViewControllerClass = (function (app) {
             });
         }
 
-        //
-        //arr.forEach(function(number, index) {
-        //    var div = $(me.itemTemplate);
-        //    var phone = div.find(".phoneNumber");
-        //    phone.val(number).attr("id" , "phone" + index);
-        //
-        //    div.find(".callButton").click(me.phoneClickHandler.bind( me , number, index ))
-        //    listContainer.append(div);
-        //});
-
-        this.titleElement.val(this.dataSet.name);
-        this.editModeOn();
+        this.titleElement.val(this.dataSet.name || "" );
+        this.setEditMode();
 
         if (this.isNew) {
             setTimeout(setFocus, 500, this.titleElement);
         }
+
+        this.setEditMode();
     }
 
     function setFocus (item) {
         item.focus();
+    }
+
+    ContactViewController.prototype.setEditMode = function () {
+
+        _app.ViewControllerClass.prototype.setEditMode.call(this);
+
+        var allInputs = $(this.container).find("input.phoneNumber");
+
+        if (allInputs.length > 0) {
+            allInputs.unbind()
+                .blur(this.save.bind(this));
+        }
+
+        if (this.delBtn && !this.isNew) {
+            this.delBtn.unbind()
+                .click(this.DeleteContactClickHandler.bind(this));
+        }
+
+        if (this.addPhoneBtn) {
+            this.addPhoneBtn.unbind()
+                .click(this.addPhoneClickHandler.bind( this ));
+        }
     }
 
     ContactViewController.prototype.addPhoneElement = function (number , index, me, listContainer) {
@@ -64,18 +76,6 @@ app.ContactViewControllerClass = (function (app) {
         listContainer.append(div);
 
         return div;
-    }
-
-    ContactViewController.prototype.editModeOn = function () {
-
-        var allInputs = $(this.container).find("input");
-        allInputs.blur(this.save.bind(this));
-    }
-
-    ContactViewController.prototype.editModeOff = function () {
-
-        var allInputs = $(this.container).find("input");
-        allInputs.unbind();
     }
 
     ContactViewController.prototype.save = function (e) {
@@ -112,19 +112,26 @@ app.ContactViewControllerClass = (function (app) {
             var titleChange = this.titleElement.val();
             if (titleChange && titleChange != this.dataSet.name) {
 
-                this.dataSet.name = titleChange;
 
+                this.dataSet.name = titleChange;
                 var nameArr = titleChange.split(" ");
                 this.dataSet.firstName = nameArr.shift();
                 this.dataSet.lastName = nameArr.join(" ");
 
-                this.dataSet.parent.addItem(this.dataSet);
-                this.isNew = false;
-                EventBus.dispatch("dataChanged", this);
+                if (this.isNew) {
+                    this.dataSet.parent.addItem(this.dataSet);
+                }
 
                 if (this.dataSet.phoneNumbers.length < 1) {
                     this.addPhoneClickHandler();
                 }
+                else {
+                    
+                }
+
+                this.isNew = false;
+
+                EventBus.dispatch("dataChanged", this);
             }
             else {
                 if (!titleChange) {
@@ -137,10 +144,13 @@ app.ContactViewControllerClass = (function (app) {
     }
 
     ContactViewController.prototype.DeleteContactClickHandler = function() {
+        var me = this;
 
-        this.dataSet.destroy();
-
-        EventBus.dispatch("changeView", this, this.parent);
+        _app.DomHelpers.setModal("DELETE", "Are you sure you want to delete " +
+            this.dataSet.name + " ?").then(function () {
+                item.remove();
+                EventBus.dispatch("changeView", me, item.parent);
+            }).fail(function() { console.log('cancel'); })
     }
 
     ContactViewController.prototype.addPhoneClickHandler = function () {
@@ -150,17 +160,17 @@ app.ContactViewControllerClass = (function (app) {
 
     ContactViewController.prototype.handleBack = function() {
 
+        var me = this;
         if (this.isNew) {
-            var isConfirmed = confirm("leave without saving?");
-
-            if (!isConfirmed) {
-                return;
-            }
+            _app.DomHelpers.setModal("New Contact", "Contact was not saved, leave anyway?")
+                .then(function () {
+                    me.isNew = false;
+                    EventBus.dispatch("changeView", me, me.parent);
+                })
         }
-
-        this.editModeOff();
-        EventBus.dispatch("changeView", this, this.parent);
-
+        else {
+            EventBus.dispatch("changeView", this, this.parent);
+        }
     }
 
     ContactViewController.prototype.phoneClickHandler = function() {
