@@ -53,7 +53,13 @@ app.ContactViewControllerClass = (function (app) {
 
         if (allInputs.length > 0) {
             allInputs.unbind()
-                .blur(this.save.bind(this));
+                .blur(this.save.bind(this))
+                .keyup(function(e){
+                    if (e.keyCode == 13) {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                    }
+                });
         }
 
         if (this.delBtn && !this.isNew) {
@@ -79,8 +85,6 @@ app.ContactViewControllerClass = (function (app) {
     }
 
     ContactViewController.prototype.save = function (e) {
-
-        console.log("saveEdit: ", this, e);
 
         var currentField = $(e.currentTarget);
         if (currentField.hasClass("phoneNumber")) {
@@ -125,12 +129,8 @@ app.ContactViewControllerClass = (function (app) {
                 if (this.dataSet.phoneNumbers.length < 1) {
                     this.addPhoneClickHandler();
                 }
-                else {
-                    
-                }
 
                 this.isNew = false;
-
                 EventBus.dispatch("dataChanged", this);
             }
             else {
@@ -146,16 +146,28 @@ app.ContactViewControllerClass = (function (app) {
     ContactViewController.prototype.DeleteContactClickHandler = function() {
         var me = this;
 
-        _app.DomHelpers.setModal("DELETE", "Are you sure you want to delete " +
-            this.dataSet.name + " ?").then(function () {
+        _app.DomHelpers.setModal("DELETE",
+            "Are you sure you want to delete " + this.dataSet.name + " ?")
+            .then(function () {
                 item.remove();
                 EventBus.dispatch("changeView", me, item.parent);
-            }).fail(function() { console.log('cancel'); })
+            })
+            .fail(function() {
+                console.log('cancel');
+            })
     }
 
     ContactViewController.prototype.addPhoneClickHandler = function () {
+        var me = this;
         var elem = this.addPhoneElement("", this.dataSet.phoneNumbers.length, this, this.listContainer);
-        elem.find(".phoneNumber").blur(this.save.bind(this)).focus();
+        elem.find(".phoneNumber").blur(this.save.bind(this))
+            .focus()
+            .keyup(function(e){
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                }
+            });
     }
 
     ContactViewController.prototype.handleBack = function() {

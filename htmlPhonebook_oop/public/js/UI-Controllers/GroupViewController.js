@@ -146,7 +146,6 @@ app.GroupViewControllerClass = (function (app) {
                 var group = new _app.Group(args);
 
                 this.dataSet.addItem(group);
-                EventBus.dispatch("dataChanged", this);
                 this.updateDOM();
             }
             else {
@@ -162,10 +161,10 @@ app.GroupViewControllerClass = (function (app) {
                 currentField.focus();
             }
         }
-        else if (currentField == this.titleElement ) {
+        else {
 
             if (currentField.val() != this.dataSet.name) {
-                this.dataSet.name = titleChange
+                this.dataSet.name = currentField.val();
                 EventBus.dispatch("dataChanged", this);
             }
         }
@@ -190,9 +189,9 @@ app.GroupViewControllerClass = (function (app) {
 
         var me = this;
 
-        _app.DomHelpers.setModal("DELETE", "Are you sure you want to delete " +
-            item.name + " ?")
-            .then(function() {
+        _app.DomHelpers.setModal("DELETE",
+            "Are you sure you want to delete " + item.name + " ?")
+            .then( function() {
                 item.remove();
                 var currentArr = me.dataSet.items;
                 var ind = currentArr.indexOf(item);
@@ -201,7 +200,9 @@ app.GroupViewControllerClass = (function (app) {
                 }
                 me.updateDOM();
             })
-            .fail(function() { console.log('cancel'); })
+            .fail( function() {
+                console.log('cancel');
+            })
     }
 
     GroupViewController.prototype.addContactBtnHandler = function () {

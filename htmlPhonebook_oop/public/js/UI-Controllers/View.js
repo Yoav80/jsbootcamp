@@ -66,7 +66,7 @@ app.ViewControllerClass = (function (app) {
             this.titleElement.keyup(function(e){
                 if (e.keyCode == 13) {
                     e.preventDefault();
-                    me.save.bind(this , e);
+                    me.titleElement.blur();
                 }
             });
         }
