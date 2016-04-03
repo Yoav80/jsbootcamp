@@ -97,11 +97,11 @@ app.ViewControllerClass = (function (app) {
             .hide()
             .delay(150)
             .fadeIn(150);
+
     }
 
     View.prototype.hideMe = function() {
         this.container.fadeOut(150);
-
     }
 
     return View;

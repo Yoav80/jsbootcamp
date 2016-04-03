@@ -42,7 +42,6 @@ function changeView (scope, viewData, isNew, parent) {
     console.log("changeView!!" , viewData, isNew, parent);
 
     if (viewData.items) {
-
         app.GroupViewCtrl.setData( viewData, isNew, parent);
 
         app.ContactViewCtrl.hideMe();
