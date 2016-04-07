@@ -1,0 +1,13 @@
+
+    <span class="mdl-list__item-primary-content item">
+        <i ng-class="item.items ? 'group' : 'person'" ng-show="!item.noIcon" class="material-icons mdl-list__item-avatar iconHolder">
+            {{item.items ? "group" : "person"}}
+        </i>
+
+        <input my-auto-focus ng-model="item.name" ng-click="item.isNew ? 0 : groupCtrl.setData(item)" type="text" ng-readonly="!item.isNew" class="mdl-list__item-secondary-action itemName clickable">
+
+    </span>
+    <a ng-click="groupCtrl.deleteItem(item)" class="mdl-list__item-secondary-action deleteButton" href="javascript:void(0)">
+        <i class="material-icons">delete</i>
+    </a>
+
