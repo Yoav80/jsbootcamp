@@ -6,6 +6,8 @@ ng_app.controller("contactViewController", function($scope , $rootScope, $timeou
 
     var vm = this;
     vm.dataSet = {};
+    vm.isNew = false;
+    vm.markedForDelete = false;
 
     $scope.$on('displayContact' , function(e , item, isNew) {
         $timeout(vm.setData(item, isNew) , 500);
@@ -14,6 +16,14 @@ ng_app.controller("contactViewController", function($scope , $rootScope, $timeou
     vm.deleteItem = function() {
         vm.markedForDelete = true;
         vm.back();
+    };
+
+    vm.titleBlur = function (event) {
+        if (vm.dataSet.phoneNumbers.length == 0) {
+            vm.addPhone();
+        }
+
+        vm.checkIfUpdateNeeded();
     };
 
     vm.addPhone = function() {
@@ -44,15 +54,10 @@ ng_app.controller("contactViewController", function($scope , $rootScope, $timeou
             }
 
             else {
-                vm.original.name = vm.dataSet.name;
-                var nameArr = vm.dataSet.name.split(" ");
-                vm.original.firstName = nameArr.shift();
-                vm.original.lastName = nameArr.join(" ");
-                vm.original.phoneNumbers = vm.dataSet.phoneNumbers;
-                vm.original.parent.addItem(vm.original);
+                vm.checkIfUpdateNeeded();
+
                 vm.isNew = false;
                 vm.dataSet = null;
-                //TODO save new contact
 
                 $rootScope.$broadcast('displayGroups', vm.original.parent);
             }
@@ -67,39 +72,46 @@ ng_app.controller("contactViewController", function($scope , $rootScope, $timeou
                 })
         }
         else {
-            var changed = false;
-
-            if (vm.dataSet.name != vm.original.name && vm.dataSet.name.length > 0) {
-                changed = true;
-
-                vm.original.name = vm.dataSet.name;
-                var nameArr = vm.dataSet.name.split(" ");
-                vm.original.firstName = nameArr.shift();
-                vm.original.lastName = nameArr.join(" ");
-            }
-
-            if (vm.dataSet.phoneNumbers.length != vm.original.phoneNumbers.length){
-                changed = true;
-                vm.original.phoneNumbers = vm.dataSet.phoneNumbers;
-            }
-
-            else {
-                for (var i=0; i<vm.dataSet.phoneNumbers.length; i++) {
-                    if(vm.dataSet.phoneNumbers[i] != vm.original.phoneNumbers[i]){
-                        vm.original.phoneNumbers[i] = vm.dataSet.phoneNumbers[i];
-                        changed = true;
-                    }
-                }
-            }
-
-            if (changed) {
-
-                //TODO update contact
-            }
+            vm.checkIfUpdateNeeded();
 
             vm.dataSet = null;
             $rootScope.$broadcast('displayGroups', vm.original.parent);
         }
+    };
+
+    vm.checkIfUpdateNeeded = function () {
+        console.log("checking for updates..");
+        var changed = false;
+
+        if (vm.dataSet.name != vm.original.name && vm.dataSet.name.length > 0) {
+            changed = true;
+        }
+
+        else if (vm.dataSet.phoneNumbers.length != vm.original.phoneNumbers.length){
+            changed = true;
+        }
+
+        if (changed) {
+
+            if (vm.original.parent.items.indexOf(vm.original) == -1){
+                // TODO -  check if id??
+                vm.original.parent.addItem(vm.original);
+                vm.isNew = false;
+
+                //TODO create contact
+                console.log("creating new contact......")
+            }
+            else {
+                console.log("updateing......")
+                //TODO update contact
+                vm.original.name = vm.dataSet.name;
+                var nameArr = vm.dataSet.name.split(" ");
+                vm.original.firstName = nameArr.shift();
+                vm.original.lastName = nameArr.join(" ");
+                vm.original.phoneNumbers = vm.dataSet.phoneNumbers;
+            }
+        }
+
     };
 
     vm.clearEmptyPhone = function () {

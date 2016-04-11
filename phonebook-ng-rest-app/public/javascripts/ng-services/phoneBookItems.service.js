@@ -2,23 +2,57 @@
 var app = app || {};
 
 var ng_app = angular.module('phonebook');
-ng_app.service('phoneBookItems', function () {
+ng_app.service('phoneBookItems', function (phoneBookData , $q) {
 
     /**
      * set the phone book root object, and fill it
      * either by reading JSON or by creating a default tree.
      */
 
-    this.dataLoader = new app.DataLoader();
+    console.log("phoneBookItems service");
+    //this.dataLoader = new app.DataLoader();
     var _root = new app.Group({name: "PhoneBook"});
+    var vm = this;
 
+    /*
     var jsonData = this.dataLoader.readDataFromLocalStorage();
     if (!jsonData) {
         console.error("Error loading data, loading defaults");
     }
+    */
 
     this.root = function() {
-      return _root;
+        //return _root;
+
+        var def = $q.defer();
+
+        var p = phoneBookData.getJSON();
+        p.success(function (data) {
+            console.log("data loaded successfully");
+            var dataObject = {
+                itemInDataIndex: 0,
+                data: data
+            };
+
+            app.BookItem.setId(0);
+            _root.items = [];
+            _root.addJsonTree(dataObject);
+            def.resolve(_root);
+
+        }).error(function () {
+            console.log("error loading data, getting defaults");
+            var dataObject = {
+                itemInDataIndex: 0,
+                data: vm .getDefaults()
+            };
+
+            app.BookItem.setId(0);
+            _root.items = [];
+            _root.addJsonTree(dataObject);
+            def.resolve(_root);
+        });
+
+        return def.promise;
     };
 
     this.setData = function (jsonData) {
@@ -32,10 +66,12 @@ ng_app.service('phoneBookItems', function () {
         _root.items = [];
         _root.addJsonTree(dataObject);
 
-        EventBus.dispatch("dataChanged", this);
+        //EventBus.dispatch("dataChanged", this);
     };
 
     this.getDefaults = function () {
+
+        console.log("get defaults");
 
         var defaultJSON = '  [{"type":"Group","name":"PhoneBook","numOfChildes":4},' +
             '{"type":"Contact","name":"yoav melkman","phoneNumbers":["0542011802","65665"]},' +
@@ -59,5 +95,5 @@ ng_app.service('phoneBookItems', function () {
         console.log("save data on change!", this.root);
     };
 
-    this.setData(jsonData);
+    //this.setData(jsonData);
 });

@@ -15,8 +15,7 @@
         <link rel="stylesheet" href="./stylesheets/myStyles.css"/>
         <link rel="stylesheet" type="text/css" href="./lib/dialog-polyfill.css" />
 
-        <script src="./lib/angular.min.js"></script>
-        <script src="./lib/angular-animate.min.js"></script>
+
     </head>
 
     <body>
@@ -55,7 +54,7 @@
             </div>
 
             <!-- Content Area -->
-            <main class="mdl-layout__content">
+            <main class="mdl-layout__content" ng-cloak>
 
                 <!-- Group View Container -->
                 <div ng-controller="groupViewController as groupCtrl" ng-show="main.currentView == 'group'" id="GroupListView" class="mdl-grid">
@@ -68,7 +67,7 @@
                                 <i class="material-icons">arrow_upward</i>
                             </button>
 
-                            <input ng-model="groupCtrl.dataSet.name" ng-disabled="groupCtrl.isTitleDisabled" type="text" class="mdl-textfield__input GroupTitle">
+                            <input pb-item-title ng-ctrl="groupCtrl" ng-model="groupCtrl.dataSet.name" ng-disabled="groupCtrl.isTitleDisabled" type="text" class="mdl-textfield__input GroupTitle">
 
                             <!-- add button - multi state -->
                             <div class="mdl-speed-dial">
@@ -97,7 +96,7 @@
 
                         <ul ng-if="!groupCtrl.noItems" class="demo-list-action mdl-list">
                             <!-- list item template  -->
-                            <li ng-repeat="item in groupCtrl.dataSet.items" id="GroupTemplate" class="mdl-list__item">
+                            <li ng-repeat="item in groupCtrl.dataSet.items | orderBy:'name'" id="GroupTemplate" class="mdl-list__item">
 
                                 <group-view-list-item ng-model="item" ng-ctrl="groupCtrl"></group-view-list-item>
 
@@ -105,7 +104,7 @@
                         </ul>
 
                         <div class="mdl-list__item" ng-if="groupCtrl.noItems">
-                            <h3>no results...</h3>
+                            <h4>no results...</h4>
                         </div>
 
                     </div>
@@ -119,13 +118,14 @@
 
                     <div class="mdl-cell mdl-cell--8-col mdl-shadow--2dp">
 
-                        <div class="demo-card-square mdl-card mdl-shadow--2dp">
+                        <div class="demo-card-square mdl-card">
 
                             <div class="mdl-card__title mdl-card--expand">
                                 <button ng-click="contactCtrl.back()" class="backBtn back-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                                     <i class="material-icons">arrow_back</i>
                                 </button>
-                                <input ng-if="main.currentView == 'contact'" my-auto-focus ng-model="contactCtrl.dataSet.name" class="mdl-textfield__input ContactTitle">
+                                <input pb-item-title ng-ctrl="contactCtrl" ng-if="main.currentView == 'contact'" my-auto-focus ng-model="contactCtrl.dataSet.name"
+                                       class="mdl-textfield__input ContactTitle">
                             </div>
 
                             <div class="mdl-card__supporting-text">
@@ -136,7 +136,8 @@
                                         <a class="mdl-list__item-secondary-action callButton" href="javascript:void(0)">
                                             <i class="material-icons">phone</i>
                                         </a>
-                                        <input ng-model="contactCtrl.dataSet.phoneNumbers[$index]" type="tel" my-auto-focus required class="phoneNumber mdl-list__item-secondary-action">
+                                        <input ng-model="contactCtrl.dataSet.phoneNumbers[$index]"
+                                               type="tel" my-auto-focus required class="phoneNumber mdl-list__item-secondary-action">
                                     </li>
                                 </ul>
                                 </form>
@@ -174,6 +175,8 @@
         </dialog>
 
 
+        <script src="./lib/angular.min.js"></script>
+        <!--script src="./lib/angular-animate.min.js"></script-->
         <script src="./lib/material.min.js"></script>
         <script src="./lib/jquery-2.2.1.min.js"></script>
         <script src="./lib/mdl-speed-dial.js"></script>
@@ -185,14 +188,15 @@
         <script src="javascripts/data-classes/BookItem.js"></script>
         <script src="javascripts/data-classes/Contact.js"></script>
         <script src="javascripts/data-classes/Group.js"></script>
-        <script src="javascripts/data-classes/dataLoader.js"></script>
-        <!--script src="./javascripts/PhoneBook.js"></script-->
+        <!--script src="javascripts/data-classes/dataLoader.js"></script-->
 
         <script src="./javascripts/app.js"></script>
+        <script src="./javascripts/ng-services/phoneBookData.service.js"></script>
         <script src="./javascripts/ng-services/phoneBookItems.service.js"></script>
         <script src="./javascripts/ng-ui/mainView.controller.js"></script>
         <script src="./javascripts/ng-ui/contactView.controller.js"></script>
         <script src="./javascripts/ng-ui/groupView.controller.js"></script>
+        <script src="./javascripts/directives/pbItemTitle.directive.js"></script>
         <script src="./javascripts/directives/groupViewListItem.directive.js"></script>
         <script src="./javascripts/ng-ui/header.controller.js"></script>
 

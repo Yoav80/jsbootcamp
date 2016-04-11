@@ -8,15 +8,13 @@
         .directive('myAutoFocus', ['$timeout', function($timeout) {
             return {
                 restrict: 'A',
-                link : function($scope, $element, $parentCtrl) {
+                link : function($scope, $element) {
 
                     $timeout(function () {
                         if ($element[0].value.length < 1) {
-                            $element.attr("ng-readonly",false);
-                            $scope.ngClick = null;
                             $element[0].focus();
                         }
-                    });
+                    }, 100);
                 }
             }
         }]);

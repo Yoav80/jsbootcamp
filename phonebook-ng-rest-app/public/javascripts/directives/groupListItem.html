@@ -4,10 +4,26 @@
             {{item.items ? "group" : "person"}}
         </i>
 
-        <input my-auto-focus ng-model="item.name" ng-click="item.isNew ? 0 : groupCtrl.setData(item)" type="text" ng-readonly="!item.isNew" class="mdl-list__item-secondary-action itemName clickable">
+        <form name="scope.newGroupForm" novalidate>
+            <input my-auto-focus name="name" type="text" required ng-if="item.isNew" class="mdl-list__item-secondary-action itemName"
+                   ng-model="groupCtrl.newGroupName"
+                   ng-blur="groupCtrl.saveNewItem($event , item)"
+                   ng-keypress="($event.which === 13)?groupCtrl.saveNewItem($event , item):0"
+                   placeholder="new group {{::groupCtrl.dataSet.items.length}}">
+
+            <span ng-if="scope.newGroupForm.name.$invalid && (scope.newGroupForm.$submitted || scope.newGroupForm.name.$touched)"
+                  class="validaton-error">Please specify a name</span>
+
+        </form>
+
+        <span ng-model="item.name" class="mdl-list__item-secondary-action itemName clickable" ng-if="item.isNew != true"
+            ng-click="groupCtrl.setData(item)">
+            {{item.name}}
+        </span>
 
     </span>
     <a ng-click="groupCtrl.deleteItem(item)" class="mdl-list__item-secondary-action deleteButton" href="javascript:void(0)">
         <i class="material-icons">delete</i>
     </a>
 
+<!-- ng-model="item.name"  -->

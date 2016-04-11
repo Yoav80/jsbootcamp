@@ -39,6 +39,7 @@ app.Group = (function (app) {
             }
             else {
                 console.log("adding: " + item.getName());
+                item.parent = this;
                 this.items.push(item);
             }
         }
