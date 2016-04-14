@@ -2,8 +2,8 @@
 
 var express = require('express');
 var router = express.Router();
-var DBClass = require('../bin/DB-Wrapper.js');
-var DB = new DBClass("./phonebookDB.db");
+//var DBClass = require('../bin/DB-Wrapper.js');
+//var DB = new DBClass("./phonebookDB.db");
 
 
 var fs = require('fs');
@@ -95,7 +95,7 @@ function createFlatArr(item, flatArray){
 
     return flatArray;
 }
-/* GET group listing. */
+/* GET group listing.
 
 //get all groups
 router.get('/groups', function(req, res, next) {
@@ -189,6 +189,7 @@ router.put('/groups/:id', function(req, res, next) {
 /* GET contact listing */
 
 //get all contacts
+/*
 router.get('/contacts', function(req, res, next) {
     console.log("getting groups");
     DB.get('contacts').then( function (contacts) {
@@ -274,6 +275,6 @@ router.put('/contacts/:id', function(req, res, next) {
         res.send('error while creating Student, please contact your administrator.');
     })
 });
-
+*/
 
 module.exports = router;
