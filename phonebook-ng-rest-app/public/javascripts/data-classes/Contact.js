@@ -1,5 +1,9 @@
+'use strict';
 var app = app || {};
 
+/**
+ * Contact data class
+ */
 app.Contact = (function (app) {
 
     var _app = app;

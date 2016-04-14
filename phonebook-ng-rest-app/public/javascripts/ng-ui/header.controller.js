@@ -1,19 +1,28 @@
 
-'use strict';
+/**
+ * The header controller.
+ * in charge of reset and search
+ */
 
-var ng_app = angular.module('phonebook');
+(function () {
 
-ng_app.controller("headerController" , function($rootScope , phoneBookItems) {
+    'use strict';
 
-    this.search = function ($event) {
-        var str = $event.currentTarget.value;
-        var data = phoneBookItems.root();
-        var resultsArr = data.getItemsByName(str);
+    var ng_app = angular.module('phonebook');
+    ng_app.controller("headerController" , function($rootScope , phoneBookData) {
 
-        $rootScope.$broadcast('displaySearch', resultsArr);
-    };
+        this.search = function ($event) {
+            var str = $event.currentTarget.value;
+            var resultsArr = phoneBookData.getRoot().getItemsByName(str);
 
-    this.resetData = function () {
-        console.log("reset data");
-    };
-});
+            $rootScope.$broadcast('displaySearch', resultsArr);
+        };
+
+        this.resetData = function () {
+            console.log("reset data");
+            phoneBookData.resetToDefaults();
+            $rootScope.$broadcast('resetData');
+        };
+    });
+
+})();

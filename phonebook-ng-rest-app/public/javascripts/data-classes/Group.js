@@ -1,19 +1,13 @@
+'use strict';
 var app = app || {};
 
+/**
+ * Group data class
+ */
 app.Group = (function (app) {
 
     var _app = app;
 
-
-    /**
-     * @constructor function for creation of a group object
-     *              inherits from the BookItem class
-     *
-     * @param args - name as string
-     *             - parent as Group or null for the root
-     *             - id as int if loaded from db
-     *
-     */
     function Group(args) {
 
         _app.BookItem.call(this, args.id, args.name);
@@ -144,7 +138,7 @@ app.Group = (function (app) {
                 }
             }
         }
-    }
+    };
 
     /**
      * A search for an exact match on a name of a group

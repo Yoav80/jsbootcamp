@@ -21,14 +21,14 @@ router.get('/flatJSON' , function (req, res, next) {
     else {
 
         fs.readFile(DATA_PATH, function (err, data) {
-            console.log(err , JSON.parse(data));
+            console.log(err , data);
             if (err) {
-                res.set('Content-Type', 'application/json');
+                res.set('Content-Type', 'text/plain');
                 res.send('error while retrieving rows, please contact your administrator.');
             }
             else {
-                res.set('Content-Type', 'application/json');
-                res.json(JSON.parse(data));
+                res.set('Content-Type', 'text/plain');
+                res.send(data);
             }
         });
 
@@ -49,7 +49,7 @@ router.post('/flatJSON' , function (req, res, next) {
     fs.writeFile(DATA_PATH, dataToWrite , "utf8", function (err, data) {
         if (err) {
             console.log("error while saving data");
-            res.set('Content-Type', 'application/json');
+            //res.set('Content-Type', 'application/json');
 
             res.send("error while saving data");
         }

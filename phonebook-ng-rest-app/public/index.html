@@ -57,19 +57,24 @@
             <main class="mdl-layout__content" ng-cloak>
 
                 <!-- Group View Container -->
-                <div ng-controller="groupViewController as groupCtrl" ng-show="main.currentView == 'group'" id="GroupListView" class="mdl-grid">
-                    <div class="mdl-layout-spacer"></div>
+                <div ng-controller="groupViewController as groupCtrl"
+                     ng-show="main.currentView == 'group'"
+                     id="GroupListView"
+                     class="mdl-grid">
 
+                    <div class="mdl-layout-spacer"></div>
                     <div class="mdl-cell mdl-cell--8-col mdl-shadow--2dp">
 
+                        <!-- group list header -->
                         <div class="listViewHeader">
                             <button ng-click="groupCtrl.back()" ng-disabled="groupCtrl.isBackDisabled" class="backBtn back-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                                 <i class="material-icons">arrow_upward</i>
                             </button>
-
-                            <input pb-item-title ng-ctrl="groupCtrl" ng-model="groupCtrl.dataSet.name" ng-disabled="groupCtrl.isTitleDisabled" type="text" class="mdl-textfield__input GroupTitle">
-
-                            <!-- add button - multi state -->
+                            <input type="text" ng-enter
+                                   ng-blur="groupCtrl.updateCurrentGroup()"
+                                   ng-model="groupCtrl.title"
+                                   ng-disabled="groupCtrl.isTitleDisabled"
+                                   class="mdl-textfield__input GroupTitle">
                             <div class="mdl-speed-dial">
                                 <!-- Be sure to put the .mdl-speed-dial__main-fab button before the .mdl-speed-dial__options section -->
                                 <button ng-disabled="groupCtrl.isAddingDisabled" class="mdl-speed-dial__main-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
@@ -94,12 +99,14 @@
                             </div>
                         </div>
 
+                        <!-- group list -->
                         <ul ng-if="!groupCtrl.noItems" class="demo-list-action mdl-list">
                             <!-- list item template  -->
                             <li ng-repeat="item in groupCtrl.dataSet.items | orderBy:'name'" id="GroupTemplate" class="mdl-list__item">
-
-                                <group-view-list-item ng-model="item" ng-ctrl="groupCtrl"></group-view-list-item>
-
+                                <group-view-list-item
+                                        ng-model="item"
+                                        ng-ctrl="groupCtrl">
+                                </group-view-list-item>
                             </li>
                         </ul>
 
@@ -108,61 +115,66 @@
                         </div>
 
                     </div>
-
                     <div class="mdl-layout-spacer"></div>
                 </div>
 
                 <!-- Contact View Container -->
                 <div ng-controller="contactViewController as contactCtrl" ng-show="main.currentView == 'contact'" id="ContactListVew" class="mdl-grid">
                     <div class="mdl-layout-spacer"></div>
-
                     <div class="mdl-cell mdl-cell--8-col mdl-shadow--2dp">
-
                         <div class="demo-card-square mdl-card">
 
+                            <!-- Contact header -->
                             <div class="mdl-card__title mdl-card--expand">
                                 <button ng-click="contactCtrl.back()" class="backBtn back-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                                     <i class="material-icons">arrow_back</i>
                                 </button>
-                                <input pb-item-title ng-ctrl="contactCtrl" ng-if="main.currentView == 'contact'" my-auto-focus ng-model="contactCtrl.dataSet.name"
+                                <input ng-enter
+                                       ng-blur="contactCtrl.titleBlur()"
+                                       ng-if="main.currentView == 'contact'"
+                                       my-auto-focus
+                                       ng-model="contactCtrl.dataSet.name"
                                        class="mdl-textfield__input ContactTitle">
                             </div>
 
+                            <!-- Contact phones Template -->
                             <div class="mdl-card__supporting-text">
                                 <form novalidate>
                                 <ul class="mdl-list">
-                                    <!-- Contact phone Template -->
                                     <li ng-repeat="phone in contactCtrl.dataSet.phoneNumbers track by $index" class="mdl-list__item">
                                         <a class="mdl-list__item-secondary-action callButton" href="javascript:void(0)">
                                             <i class="material-icons">phone</i>
                                         </a>
                                         <input ng-model="contactCtrl.dataSet.phoneNumbers[$index]"
-                                               type="tel" my-auto-focus required class="phoneNumber mdl-list__item-secondary-action">
+                                               type="tel" my-auto-focus required
+                                               class="phoneNumber mdl-list__item-secondary-action"
+                                               ng-blur="contactCtrl.checkIfUpdateNeeded()"
+                                               ng-keypress="contactCtrl.blurOnEnter($event)">
                                     </li>
                                 </ul>
                                 </form>
                             </div>
 
+                            <!-- Contact actions -->
                             <div class="mdl-card__actions mdl-card--border">
                                 <a ng-click="contactCtrl.deleteItem()" class="mdl-list__item-secondary-action deleteButton" href="javascript:void(0)">
-                                    <i class="material-icons">delete</i> delete item
+                                    <i class="material-icons">delete</i> delete contact
                                 </a>
 
                                 <a ng-click="contactCtrl.addPhone()" class="mdl-list__item-secondary-action addPhoneButton" href="javascript:void(0)">
                                     <i class="material-icons">add</i> add phone
                                 </a>
                             </div>
+
                         </div>
-
                     </div>
-
                     <div class="mdl-layout-spacer"></div>
                 </div>
-
 
             </main>
         </div>
 
+        <!-- Modal overlay -->
         <dialog class="mdl-dialog" id="dialog">
             <h4 class="mdl-dialog__title">Allow data collection?</h4>
             <div class="mdl-dialog__content">
@@ -174,9 +186,7 @@
             </div>
         </dialog>
 
-
         <script src="./lib/angular.min.js"></script>
-        <!--script src="./lib/angular-animate.min.js"></script-->
         <script src="./lib/material.min.js"></script>
         <script src="./lib/jquery-2.2.1.min.js"></script>
         <script src="./lib/mdl-speed-dial.js"></script>
@@ -188,19 +198,14 @@
         <script src="javascripts/data-classes/BookItem.js"></script>
         <script src="javascripts/data-classes/Contact.js"></script>
         <script src="javascripts/data-classes/Group.js"></script>
-        <!--script src="javascripts/data-classes/dataLoader.js"></script-->
 
         <script src="./javascripts/app.js"></script>
         <script src="./javascripts/ng-services/phoneBookData.service.js"></script>
-        <script src="./javascripts/ng-services/phoneBookItems.service.js"></script>
         <script src="./javascripts/ng-ui/mainView.controller.js"></script>
         <script src="./javascripts/ng-ui/contactView.controller.js"></script>
         <script src="./javascripts/ng-ui/groupView.controller.js"></script>
-        <script src="./javascripts/directives/pbItemTitle.directive.js"></script>
-        <script src="./javascripts/directives/groupViewListItem.directive.js"></script>
+        <script src="./javascripts/ng-directives/pbItemTitle.directive.js"></script>
+        <script src="./javascripts/ng-directives/groupViewListItem.directive.js"></script>
         <script src="./javascripts/ng-ui/header.controller.js"></script>
-
-
-
     </body>
 </html>
