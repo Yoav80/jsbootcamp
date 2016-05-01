@@ -1,0 +1,30 @@
+
+    <span class="mdl-list__item-primary-content item">
+        <i ng-class="$ctrl.item.items ? 'group' : 'person'"
+           class="material-icons mdl-list__item-avatar iconHolder clickable"
+           ng-show="!$ctrl.item.noIcon"
+           ng-click="$ctrl.parentCtrl.setData($ctrl.item)">
+            {{$ctrl.item.items ? "group" : "person"}}
+        </i>
+
+        <form name="scope.newGroupForm" novalidate ng-if="$ctrl.item.isNew">
+            <input my-auto-focus name="name" type="text" required
+                   class="mdl-list__item-secondary-action itemName"
+                   ng-model="$ctrl.parentCtrl.newGroupName"
+                   ng-blur="$ctrl.parentCtrl.saveNewItem($event , $ctrl.item)"
+                   ng-enter
+                   placeholder="new group {{::$ctrl.parentCtrl.dataSet.items.length}}">
+        </form>
+
+        <span class="mdl-list__item-secondary-action itemName clickable" ng-if="$ctrl.item.isNew != true"
+            ng-click="$ctrl.parentCtrl.navigate($ctrl.item)">
+            {{$ctrl.item.name}}
+        </span>
+
+    </span>
+    <a ng-click="$ctrl.parentCtrl.deleteItem($ctrl.item)" class="mdl-list__item-secondary-action deleteButton" href="javascript:void(0)">
+        <i class="material-icons">delete</i>
+    </a>
+
+<!-- ng-model="item.name"
+ parentCtrl.saveNewItem($event , item)-->

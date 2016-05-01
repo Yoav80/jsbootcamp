@@ -1,0 +1,67 @@
+<html lang="en" id="html">
+
+<head>
+
+    <base href="/">
+
+    <meta charset="UTF-8">
+    <title>{PHONE BOOK - typescript/components}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png"/>
+    <meta name="msapplication-TileColor" content="#3372DF"/>
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;amp;lang=en"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <link rel="stylesheet" href="./stylesheets/material.red-indigo.min.css"/>
+    <link rel="stylesheet" href="./stylesheets/mdl-speed-dial.css"/>
+    <link rel="stylesheet" href="./stylesheets/styles.css"/>
+    <link rel="stylesheet" type="text/css" href="./stylesheets/dialog-polyfill.css" />
+    <link rel="stylesheet" href="./stylesheets/PB-styles.css"/>
+
+    <script src="./lib/jquery-2.2.1.min.js"></script>
+    <script src="./lib/jQueryExtensions.js"></script>
+    <script src="./lib/material.min.js"></script>
+    <script src="./lib/dialog-polyfill.js"></script>
+    <script src="./lib/system.src.js"></script>
+    <script src="./lib/mdl-speed-dial.js"></script>
+
+</head>
+<body>
+
+
+    <app></app>
+
+    <!-- Modal overlay -->
+    <dialog class="mdl-dialog" id="dialog">
+        <h4 class="mdl-dialog__title">Allow data collection?</h4>
+        <div class="mdl-dialog__content">
+            <p></p>
+        </div>
+        <div class="mdl-dialog__actions--full-width">
+            <button type="button" class="mdl-button ok">ok</button>
+            <button type="button" class="mdl-button cancel">cancel</button>
+        </div>
+    </dialog>
+
+
+
+    <script>
+        System.defaultJSExtensions = true;
+        System.import("main");
+        System.config({
+            map: {
+                "text": "./lib/system.text.js",
+                "css": "./lib/system.css.js",
+                "angular": "./lib/angular.min.js",
+                "angular-route": './lib/angular-route.min',
+                "angular-animate": './lib/angular-animate.min'
+
+            }
+        });
+    </script>
+    <script src="lib/domHelpers.js"></script>
+
+</body>
+</html>

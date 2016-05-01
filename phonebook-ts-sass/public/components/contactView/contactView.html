@@ -1,0 +1,55 @@
+<div id="ContactListVew" class="mdl-grid">
+    <div class="mdl-layout-spacer"></div>
+    <div class="mdl-cell mdl-cell--8-col mdl-shadow--2dp">
+        <div class="demo-card-square mdl-card">
+
+
+
+            <!-- Contact header -->
+            <div class="mdl-card__title mdl-card--expand">
+                <button ng-click="$ctrl.back($event)"
+                        class="backBtn back-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                    <i class="material-icons">arrow_back</i>
+                </button>
+                <input ng-enter
+                       ng-blur="$ctrl.titleBlur($event)"
+                       my-auto-focus
+                       ng-model="$ctrl.dataSet.name"
+                       class="mdl-textfield__input ContactTitle">
+            </div>
+
+            <!-- Contact phones Template -->
+            <div class="mdl-card__supporting-text">
+                <form novalidate>
+                    <ul class="mdl-list">
+                        <li ng-repeat="phone in $ctrl.dataSet.phoneNumbers track by $index" class="mdl-list__item">
+                            <a class="mdl-list__item-secondary-action callButton" href="javascript:void(0)">
+                                <i class="material-icons">phone</i>
+                            </a>
+                            <input ng-model="$ctrl.dataSet.phoneNumbers[$index]"
+                                   type="tel" my-auto-focus required
+                                   class="phoneNumber mdl-list__item-secondary-action"
+                                   ng-blur="$ctrl.checkIfUpdateNeeded()"
+                                   ng-keypress="$ctrl.blurOnEnter($event)">
+                        </li>
+                    </ul>
+                </form>
+            </div>
+
+            <!-- Contact actions -->
+            <div class="mdl-card__actions mdl-card--border">
+                <a ng-click="$ctrl.deleteItem($event)" class="mdl-list__item-secondary-action deleteButton" href="javascript:void(0)">
+                    <i class="material-icons">delete</i> delete contact
+                </a>
+
+                <a ng-click="$ctrl.addPhone()" class="mdl-list__item-secondary-action addPhoneButton" href="javascript:void(0)">
+                    <i class="material-icons">add</i> add phone
+                </a>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="mdl-layout-spacer"></div>
+</div>

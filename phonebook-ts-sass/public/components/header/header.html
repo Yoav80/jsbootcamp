@@ -1,0 +1,18 @@
+<!-- Title -->
+<span id="" class="mdl-layout-title">{ PHONEBOOK }</span>
+<!-- Add spacer, to align navigation to the right -->
+<div class="mdl-layout-spacer"></div>
+<!-- Navigation. We hide it in small screens. -->
+<nav class="mdl-navigation mdl-layout--large-screen-only">
+    <a ng-click="$ctrl.resetData()" id="resetData" class="mdl-navigation__link" href="javascript:void(0)">reset to default</a>
+</nav>
+
+<div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+    <label class="mdl-button mdl-js-button mdl-button--icon site-search-button" for="site-search">
+        <i class="material-icons">search</i>
+    </label>
+    <div class="mdl-textfield__expandable-holder">
+        <input ng-keypress="($event.which === 13)?$ctrl.search($event):0" class="mdl-textfield__input site-search-input" type="search" id="site-search" />
+        <label class="mdl-textfield__label" for="site-search">Search</label>
+    </div>
+</div>

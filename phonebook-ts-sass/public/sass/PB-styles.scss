@@ -1,0 +1,35 @@
+/*
+    main
+*/
+@import 'helpers';
+@import 'dialog';
+@import 'custom-mdl';
+
+
+.view {
+  position: absolute;
+  width: 100%;
+  -webkit-transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+
+  &.ng-enter {
+    left: -100%;
+    opacity: 0;
+  }
+
+  &.ng-enter.ng-enter-active {
+    left: 0%;
+    opacity: 1;
+  }
+
+  &.ng-leave {
+    left: 0%;
+    opacity: 1;
+  }
+
+  &.ng-leave.ng-leave-active {
+    left: 100%;
+    opacity: 0;
+  }
+}

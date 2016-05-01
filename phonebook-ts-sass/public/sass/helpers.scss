@@ -1,0 +1,28 @@
+/*
+    HELPERS
+*/
+
+[ng-cloak] {
+  display: none;
+}
+
+input.uneditable {
+  border-bottom: none;
+}
+
+.clickable {
+  cursor: pointer;
+  /*text-decoration: none;*/
+}
+
+.clickable:hover {
+  /*text-decoration: underline;*/
+}
+
+.active {
+  display: flex;
+}
+
+.inactive {
+  display: none;
+}

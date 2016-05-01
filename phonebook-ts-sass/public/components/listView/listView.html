@@ -1,0 +1,72 @@
+<div id="GroupListView" class="mdl-grid">
+    <div class="mdl-layout-spacer"></div>
+
+    <div class="mdl-cell mdl-cell--8-col mdl-shadow--2dp">
+
+        <!-- group list header -->
+        <div class="listViewHeader">
+
+            <button ng-click="$ctrl.back()" ng-disabled="$ctrl.isBackDisabled"
+                    class="backBtn back-fab mdl-button mdl-js-button
+                    mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+
+                <i class="material-icons">arrow_upward</i>
+
+            </button>
+
+            <input type="text" ng-enter
+                   ng-blur="$ctrl.updateCurrentGroup()"
+                   ng-model="$ctrl.title"
+                   ng-disabled="$ctrl.isTitleDisabled"
+                   class="mdl-textfield__input GroupTitle">
+
+            <div class="mdl-speed-dial">
+                <!-- Be sure to put the .mdl-speed-dial__main-fab button before the .mdl-speed-dial__options section -->
+                <button ng-disabled="$ctrl.isAddingDisabled"
+                        class="mdl-speed-dial__main-fab
+                         mdl-speed-dial__main-fab--spin
+                         mdl-button mdl-js-button mdl-button--fab
+                         mdl-js-ripple-effect mdl-button--colored">
+
+                    <i class="material-icons mdl-speed-dial_main-fab-icon">add</i>
+
+                </button>
+                <div class="mdl-speed-dial__options">
+
+                    <div class="mdl-speed-dial__option">
+
+                        <a ng-click="$ctrl.addItem('contact')" href="javascript:void(0)" class="mdl-button person mdl-js-button mdl-button--fab mdl-button--mini-fab">
+                            <i class="material-icons">person_add</i>
+                        </a>
+                    </div>
+                    <div class="mdl-speed-dial__option">
+
+                        <a ng-click="$ctrl.addItem('group')" href="javascript:void(0)" class="mdl-button group mdl-js-button mdl-button--fab mdl-button--mini-fab">
+                            <i class="material-icons">group_add</i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- group list -->
+        <ul ng-if="!$ctrl.noItems" class="demo-list-action mdl-list">
+            <!-- list item template  -->
+            <li ng-repeat="item in $ctrl.dataSet.items | orderBy:'name'" id="GroupTemplate" class="mdl-list__item">
+                <list-view-item
+                        ng-model="item"
+                        ng-ctrl="$ctrl">
+                </list-view-item>
+            </li>
+        </ul>
+
+        <!-- no results -->
+        <div class="mdl-list__item" ng-if="$ctrl.noItems">
+            <h4>no results...</h4>
+        </div>
+
+    </div>
+
+    <div class="mdl-layout-spacer"></div>
+</div>

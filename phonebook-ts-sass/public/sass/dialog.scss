@@ -1,0 +1,18 @@
+#dialog {
+
+  .mdl-dialog {
+    top: 100px;
+  }
+
+  .mdl-dialog__actions--full-width {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  button.mdl-button {
+    flex: 0 0 50%;
+    text-align: center;
+  }
+
+}

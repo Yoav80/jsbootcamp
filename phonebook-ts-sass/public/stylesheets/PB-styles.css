@@ -1,0 +1,136 @@
+/*
+    main
+*/
+/*
+    HELPERS
+*/
+[ng-cloak] {
+  display: none; }
+
+input.uneditable {
+  border-bottom: none; }
+
+.clickable {
+  cursor: pointer;
+  /*text-decoration: none;*/ }
+
+.clickable:hover {
+  /*text-decoration: underline;*/ }
+
+.active {
+  display: flex; }
+
+.inactive {
+  display: none; }
+
+#dialog .mdl-dialog {
+  top: 100px; }
+
+#dialog .mdl-dialog__actions--full-width {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap; }
+
+#dialog button.mdl-button {
+  flex: 0 0 50%;
+  text-align: center; }
+
+button.back-fab {
+  margin-left: 15px;
+  margin-right: 15px; }
+
+pb-header {
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+  align-items: center; }
+
+list-view-item {
+  display: flex;
+  flex-grow: 1;
+  align-items: center; }
+
+.mdl-speed-dial {
+  top: 37px;
+  right: 15px; }
+  .mdl-speed-dial .mdl-speed-dial__option {
+    margin: 16px 0 2px; }
+  .mdl-speed-dial .mdl-button--fab.mdl-button--mini-fab {
+    height: 56px;
+    min-width: 56px;
+    width: 56px; }
+  .mdl-speed-dial .mdl-button {
+    background: #536DFE;
+    color: white; }
+
+.mdl-cell {
+  position: relative; }
+  .mdl-cell li.mdl-list__item {
+    padding: 10px;
+    -webkit-transition-duration: .28s;
+    transition-duration: .28s;
+    -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition-property: background-color;
+    transition-property: background-color; }
+  .mdl-cell li.mdl-list__item:hover {
+    background-color: #F4F4F4; }
+  .mdl-cell .material-icons.person, .mdl-cell .mdl-speed-dial .mdl-button.person {
+    background-color: #4caf50; }
+  .mdl-cell .material-icons.group, .mdl-cell .mdl-speed-dial .mdl-button.group {
+    background-color: #424242; }
+  .mdl-cell .mdl-list__item-secondary-action {
+    padding: 10px;
+    vertical-align: top;
+    text-decoration: none; }
+  .mdl-cell input.mdl-list__item-secondary-action {
+    background: none;
+    font-size: 18px;
+    border: none;
+    /*max-width: 130px;*/
+    padding: 0 5px 0 0;
+    border-bottom: thin solid rgba(0, 0, 0, 0.12);
+    color: gray; }
+  .mdl-cell input.mdl-list__item-secondary-action:focus {
+    outline: none;
+    border-bottom: thin solid #ADADAD; }
+  .mdl-cell input.mdl-list__item-secondary-action:disabled, .mdl-cell input.mdl-list__item-secondary-action:read-only {
+    border: none; }
+  .mdl-cell .mdl-card {
+    width: 100%; }
+    .mdl-cell .mdl-card .mdl-card__title {
+      display: flex;
+      background-color: #FF5252;
+      padding: 0; }
+    .mdl-cell .mdl-card .mdl-card__title h2 {
+      font-weight: inherit;
+      font-size: 35px; }
+    .mdl-cell .mdl-card .mdl-card__actions {
+      padding: 16px; }
+    .mdl-cell .mdl-card .mdl-card__supporting-text .mdl-list {
+      display: flex;
+      flex-wrap: wrap;
+      flex-grow: 1; }
+    .mdl-cell .mdl-card .mdl-card__supporting-text {
+      display: flex;
+      align-items: baseline;
+      width: 100%;
+      box-sizing: border-box; }
+
+.view {
+  position: absolute;
+  width: 100%;
+  -webkit-transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+  .view.ng-enter {
+    left: -100%;
+    opacity: 0; }
+  .view.ng-enter.ng-enter-active {
+    left: 0%;
+    opacity: 1; }
+  .view.ng-leave {
+    left: 0%;
+    opacity: 1; }
+  .view.ng-leave.ng-leave-active {
+    left: 100%;
+    opacity: 0; }

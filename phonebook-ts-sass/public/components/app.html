@@ -1,0 +1,32 @@
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+
+    <!-- App Header ( links, search ) -->
+    <header class="mdl-layout__header" id="phoneBook-navigation">
+        <div class="mdl-layout__header-row">
+            <pb-header></pb-header>
+        </div>
+    </header>
+
+    <!-- App Header Drawer ( links, search ) -->
+    <div class="mdl-layout__drawer" id="phoneBook-navigation-drawer">
+        <pb-header-drawer></pb-header-drawer>
+    </div>
+
+
+    <!-- Content Area -->
+    <main class="mdl-layout__content" ng-cloak>
+
+
+        <div ng-view class="view"></div>
+
+        <!--
+        <list-view></list-view>
+
+
+        <contact-view></contact-view>
+        -->
+
+    </main>
+
+</div>
+
